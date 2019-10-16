@@ -25,22 +25,23 @@ const Content = (props) => (
 )
 
 const Total = (props) => {
-	// let sum = 0;
-	// props.parts.forEach(element => {
-	// 	sum += element.exercises;
-	// });
+	let {parts} = props;
 	let initialValue = 0;
+	let sum = parts.reduce(
+		(accumulator, currentValue) => accumulator + parseInt(currentValue.exercises) 
+		, initialValue);
+
 	return (
 		<>
 			<strong>
-				Total of {props.parts.reduce((accumulator, currentValue) => accumulator + parseInt(currentValue.exercises) , initialValue)} exercises
+				Total of {sum} exercises
 			</strong>
 		</>
 	)
 }
 
 const Course = (props) => {
-		// console.log(props);
+
 		const {course} = props;
 		return (
 			<>
