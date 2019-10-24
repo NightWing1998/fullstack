@@ -1,16 +1,27 @@
-import React,{useState} from 'react';
+import React,{useState, useEffect} from 'react';
 import './App.css';
 import Persons from './components/Persons';
 import {Filter,NewNumber} from './components/Forms';
+import axios from 'axios';
 
 const App = () => {
-	const [persons,setPersons] = useState([
-		{ name : 'Arto Hellas', number : '+91 00000 00000' }
-	]);
+	const [persons,setPersons] = useState([]);
 
 	const [newName,setNewName] = useState('');
 	const [newNumber,setNewNumber] = useState('');
 	const [filter,setFilter] = useState('');
+
+	useEffect( () => {
+		axios
+		.get("http://localhost:3001/persons")
+		.then( response => {
+			// console.log(response.data);
+			setPersons(response.data);
+		} );
+	} , [] );
+	
+	// console.log("Printing......");
+	// console.log("Length of persons : ",persons.length); 
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
