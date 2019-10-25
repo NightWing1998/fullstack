@@ -2,7 +2,7 @@ import React,{useState, useEffect} from 'react';
 import './App.css';
 import Persons from './components/Persons';
 import {Filter,NewNumber} from './components/Forms';
-import axios from 'axios';
+import personService from './utils/server';
 
 const App = () => {
 	const [persons,setPersons] = useState([]);
@@ -12,28 +12,49 @@ const App = () => {
 	const [filter,setFilter] = useState('');
 
 	useEffect( () => {
-		axios
-		.get("http://localhost:3001/persons")
-		.then( response => {
-			// console.log(response.data);
-			setPersons(response.data);
-		} );
+		personService
+		.getAll()
+		.then(response => {
+			setPersons(response);
+		});
 	} , [] );
-	
-	// console.log("Printing......");
-	// console.log("Length of persons : ",persons.length); 
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		let conclusion = true;
-		persons.forEach( ({name}) => {
-			if(name === newName){
-				conclusion = false;
+		let conclusion = persons.find( ({name}) => name === newName )
+		if( conclusion === undefined ){
+			let newPerson = {
+				name : newName,
+				number : newNumber
+			};
+			personService.create(newPerson)
+			.then( savedPerson => setPersons(persons.concat(savedPerson) ) )
+		} else {
+			let confirmation = window.confirm(`${newName} already exists in the phonebook. Do you wish to replace the old number?`);
+			if(confirmation){
+				conclusion.number = newNumber;
+				personService.updateContact( conclusion )
+				.then( res => {
+					setPersons( persons.filter(p =>  p.id === res.id?res:p ) );
+				} )
+				.catch( err => console.error(err) );
 			}
-		} );
-		conclusion?setPersons( persons.concat({name: newName,number : newNumber}) ):alert(`${newName} already exists in the phonebook`);
+		};
 		setNewName('');
 		setNewNumber('');
+	}
+
+	const handleDelete = id => {
+
+		let confirmation = window.confirm(`Are you sure you want to delete ${persons.find(p => p.id === id).name}`)
+
+		if(confirmation){
+			personService.del(id)
+			.then(res => {
+				setPersons( persons.filter(p => p.id !== id) )
+			})
+			.catch( err => console.log(`cannot delete person with ${id} - Error \n ${err}`));
+		}
 	}
 
 	return (
@@ -49,7 +70,7 @@ const App = () => {
 				newNumber={newNumber}
 			/>
 			<h2>Numbers</h2>
-			<Persons persons={persons} filter={filter} />
+			<Persons persons={persons} filter={filter} handleDelete={handleDelete} />
 		</>
 	)
 }

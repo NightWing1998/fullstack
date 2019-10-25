@@ -1,20 +1,20 @@
 import React from 'react';
 
-const Person = ({name,number}) => (
+const Person = ({name,number,onClick}) => (
 	<div>
-		<em>{name}</em> - {number}
+		<em>{name}</em> - {number} <button onClick={onClick}>Delete</button>
 	</div>
 )
 
-const Persons = ({persons,filter}) => (
-	persons.map(({name,number},index)=>(
+const Persons = ({persons,filter,handleDelete}) => (
+	persons.map(({name,number,id})=>(
 		name.includes(filter.toLowerCase())?
-			<Person name={name} number={number} key={index} />
+			<Person name={name} number={number} key={name} onClick={() => handleDelete(id)} />
 		:
 			name.includes(filter.toUpperCase())?
-				<Person name={name} number={number} key={index} />
+				<Person name={name} number={number} key={name} onClick={handleDelete} />
 			:
-				<div key={index} />
+				<div key={name} />
 	))
 )
 
