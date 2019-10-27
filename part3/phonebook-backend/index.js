@@ -40,9 +40,9 @@ let format= (tokens,req,res)=>{
 	return response.join(' ');
 };
 
-// app.use(morgan(format));
+app.use(morgan(format));
 
-app.use(morgan('tiny'));
+// app.use(morgan('tiny'));
 
 app.get("/",(req,res) => {
 	res.status(200).send('<h1>Hello World</h1>');
