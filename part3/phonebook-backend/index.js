@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 
-const Persons = [{
+let Persons = [{
 		id : 1,
 		name : 'Arto Hellas',
 		number : '09-90-9090909'
@@ -25,6 +25,22 @@ const generateId = () => {
 
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
+
+let format= (tokens,req,res)=>{
+	let response = [
+		tokens.method(req,res),
+		tokens.url(req, res),
+    	tokens.status(req, res),
+    	tokens.res(req, res, 'content-length'), '-',
+    	tokens['response-time'](req, res), 'ms'
+	];
+	if(req.body !== undefined){
+		response.push(JSON.stringify(req.body));
+	}
+	return response.join(' ');
+};
+
+// app.use(morgan(format));
 
 app.use(morgan('tiny'));
 
@@ -94,12 +110,21 @@ app.post("/api/persons",(req,res)=>{
 });
 
 app.put("/api/persons/:id",(req,res)=>{
-	let id = parseInt(req.params.id);
-	const newDetails = {
+	const id = parseInt(req.params.id);
+	if(!req.body.name){
+		return res.status(404).json({
+			error : `Proprty 'name' is required to update a contact`
+		})
+	} else if(!req.body.number){
+		return res.status(404).json({
+			error : `Proprty 'number' is required to update a contact`
+		})
+	}
+	let newDetails = {
 		name : req.body.name,
 		number : req.body.number
 	}
-	let person = Persons.find(p => p.id === id);
+	const person = Persons.find(p => p.id === id);
 	if(person === undefined){
 		return res.status(404).json({
 			error : `${id} does not exist in the phonebook.`
