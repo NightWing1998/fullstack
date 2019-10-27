@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Person = ({name,number,onClick}) => (
-	<div>
+	<div className="contact">
 		<em>{name}</em> - {number} <button onClick={onClick}>Delete</button>
 	</div>
 )

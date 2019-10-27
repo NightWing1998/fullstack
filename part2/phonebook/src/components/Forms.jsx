@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Filter = ({filter,handleChange}) => (
-	<form>
+	<form className="contact">
 		<div>
 			filter shown with : <input value={filter} onChange={handleChange} />
 		</div>
@@ -9,7 +9,7 @@ const Filter = ({filter,handleChange}) => (
 )
 
 const NewNumber = ({newName,handleName,newNumber,handleNumber,handleSubmit}) => (
-	<form onSubmit={handleSubmit}>
+	<form onSubmit={handleSubmit} className="contact">
 		<div>
 			name: <input value={newName} onChange={ handleName } />
 		</div>
@@ -17,7 +17,7 @@ const NewNumber = ({newName,handleName,newNumber,handleNumber,handleSubmit}) => 
 			number: <input value={newNumber} onChange={ handleNumber } />
 		</div>
 		<div>
-			<button type="submit">add</button>
+			<button type="submit">Add</button>
 		</div>
 	</form>
 )
