@@ -71,7 +71,7 @@ app.delete("/api/persons/:id",(req,res)=>{
 	let person = Persons.find(p => p.id === id);
 	if(person){
 		Persons = Persons.filter(p => p.id !== id);
-		res.status(204).json(person);
+		res.status(204).end();
 	} else {
 		res.status(404).json({
 			error : `Couldn't delete contact with ${id}. No such contact exists`
