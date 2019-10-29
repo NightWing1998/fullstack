@@ -6,11 +6,13 @@
   "scripts": {
     "start": "node index.js",
     "watch": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build" : "cd ../../part2/phonebook && npm run build && cp -r ./build ../../part3/phonebook-backend && cd ../../part3/phonebook-backend"
   },
   "author": "Dhruvil Shah",
   "license": "MIT",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "morgan": "^1.9.1"
   },

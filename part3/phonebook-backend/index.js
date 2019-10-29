@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const morgan = require('morgan');
+const cors = require('cors');
 
 let Persons = [{
 		id : 1,
@@ -17,11 +18,13 @@ let Persons = [{
 	}
 ];
 
-const PORT = 3001, min = 1, max = parseInt(Math.random()*10000000 || 10000000);
+const PORT = process.evn.PORT || 3001, min = 1, max = parseInt(Math.random()*10000000 || 10000000);
 
 const generateId = () => {
 	return parseInt( Math.random()*(max - min + 1) ) + min;
 }
+
+app.use(express.static(__dirname + '/build'));
 
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
@@ -41,12 +44,9 @@ let format= (tokens,req,res)=>{
 };
 
 app.use(morgan(format));
+app.use(cors());
 
 // app.use(morgan('tiny'));
-
-app.get("/",(req,res) => {
-	res.status(200).send('<h1>Hello World</h1>');
-})
 
 app.get("/api/persons",(req,res)=>{
 	res.status(200).json(Persons);
@@ -91,10 +91,10 @@ app.post("/api/persons",(req,res)=>{
 			error : `Proprty 'number' is required to create a contact`
 		})
 	}
-	let person = Persons.find(p => p.name === newPerson.name);
+	let person = Persons.find(p => p.name === req.body.name);
 	if(person){
 		return res.status(404).json({
-			error : `Cannot create a new contact with ${newPerson.name}. It already exists in the server`
+			error : `Cannot create a new contact with ${req.body.name}. It already exists in the server`
 		});
 	}
 	let newPerson = {
