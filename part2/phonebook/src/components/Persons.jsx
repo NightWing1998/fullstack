@@ -7,15 +7,15 @@ const Person = ({name,number,onClick}) => (
 )
 
 const Persons = ({persons,filter,handleDelete}) => (
-	persons.map(({name,number,id})=>(
-		name.includes(filter.toLowerCase())?
-			<Person name={name} number={number} key={name} onClick={() => handleDelete(id)} />
-		:
-			name.includes(filter.toUpperCase())?
-				<Person name={name} number={number} key={name} onClick={handleDelete} />
-			:
-				<div key={name} />
-	))
+	persons.map(({name,number,id}) => {
+		let capsName = name.toUpperCase();
+		let tempFilter = filter.toUpperCase();
+		if(capsName.includes(tempFilter)){
+			return <Person name={name} number={number} key={name} onClick={() => handleDelete(id)} />
+		} else {
+			return <></>
+		}
+	})
 )
 
 export default Persons;
