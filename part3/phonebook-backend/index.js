@@ -18,7 +18,7 @@ let Persons = [{
 	}
 ];
 
-const PORT = process.evn.PORT || 3001, min = 1, max = parseInt(Math.random()*10000000 || 10000000);
+const PORT = process.env.PORT || 3001, min = 1, max = parseInt(Math.random()*10000000 || 10000000);
 
 const generateId = () => {
 	return parseInt( Math.random()*(max - min + 1) ) + min;
