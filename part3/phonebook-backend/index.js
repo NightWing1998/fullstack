@@ -2,21 +2,10 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const cors = require('cors');
-require('dotenv')();
+const mongoose = require('mongoose');
+const Person = require('./models/Person');
+require('dotenv').config();
 
-let Persons = [{
-	id: 1,
-	name: 'Arto Hellas',
-	number: '09-90-9090909'
-}, {
-	id: 2,
-	name: 'Dam Lorenz',
-	number: '09-90-0909090'
-}, {
-	id: 3,
-	name: 'Dhruvil',
-	number: '91-88-50392965'
-}];
 
 const PORT = process.env.PORT || 3001,
 	min = 1,
@@ -25,6 +14,14 @@ const PORT = process.env.PORT || 3001,
 const generateId = () => {
 	return parseInt(Math.random() * (max - min + 1)) + min;
 };
+
+mongoose.connect(process.env.DB_URI, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true
+}, (err) => {
+	if (err) console.log(`Cannot connect to db. \n ${err}`);
+	else console.log(`Connected to DB!!`);
+})
 
 app.use(express.static(__dirname + '/build'));
 
@@ -53,34 +50,56 @@ app.use(cors());
 // app.use(morgan('tiny'));
 
 app.get("/api/persons", (req, res) => {
-	res.status(200).json(Persons);
+	Person.find({})
+		.then(persons => {
+			res.json(persons.map(person => person.toJSON()));
+		})
+		.catch(err => res.status(500).json({
+			error: err,
+			message: err
+		}));
 });
 
 app.get("/api/persons/:id", (req, res) => {
-	let id = parseInt(req.params.id);
-	let person = Persons.find(p => p.id === id);
+	let id = req.params.id;
 
-	if (person) {
-		res.status(200).json(person);
-	} else {
-		res.status(404).json({
-			error: `${id} does not exist in the phonebook`
-		});
-	}
+	Person.findById(id)
+		.then(doc => {
+			if (doc) {
+				res.json(doc.toJSON())
+			} else {
+				res.status(404).json({
+					error: `${id} does not exist`,
+					message: `${id} does not exist`
+				})
+			}
+		})
+		.catch(err => res.status(500).json({
+			error: err,
+			message: err
+		}))
 
 })
 
 app.delete("/api/persons/:id", (req, res) => {
-	let id = parseInt(req.params.id);
-	let person = Persons.find(p => p.id === id);
-	if (person) {
-		Persons = Persons.filter(p => p.id !== id);
-		res.status(204).end();
-	} else {
-		res.status(404).json({
-			error: `Couldn't delete contact with ${id}. No such contact exists`
-		});
-	}
+	let id = req.params.id;
+	Person.findByIdAndDelete(id)
+		.then(doc => {
+			if (doc) {
+				res.status(204).end();
+			} else {
+				res.status(404).json({
+					error: `${id} doesn not exist.`,
+					message: `${id} doesn not exist.`
+				})
+			}
+		}).catch(err => {
+			console.log(err);
+			res.status(500).json({
+				error: err,
+				message: err
+			})
+		})
 })
 
 app.post("/api/persons", (req, res) => {
@@ -95,26 +114,44 @@ app.post("/api/persons", (req, res) => {
 			error: `Proprty 'number' is required to create a contact`
 		})
 	}
-	let person = Persons.find(p => p.name === req.body.name);
-	if (person) {
-		return res.status(404).json({
-			error: `Cannot create a new contact with ${req.body.name}. It already exists in the server`
-		});
-	}
-	let newPerson = {
-		name: req.body.name,
-		number: req.body.number,
-		id: generateId(),
-	}
-	while (Persons.find(p => p.id === newPerson.id) && count < 3) {
-		newPerson.id = generateId();
-	}
-	Persons.push(newPerson);
-	res.status(201).json(newPerson);
+
+	Person.findOne({
+			name: req.body.name
+		})
+		.then(doc => {
+			if (doc) {
+				res.status(403).json({
+					error: `${req.body.name} already exists int the phonebook`,
+					message: `${req.body.name} already exists int the phonebook`,
+				});
+				return;
+			} else {
+				return new Person({
+					name: req.body.name,
+					number: req.body.number
+				})
+			}
+		})
+		.then(newPerson => {
+			if (!newPerson) {
+				return;
+			}
+			newPerson.save()
+				.then(savedPerson => res.status(201).json(savedPerson.toJSON()))
+				.catch(err => {
+					throw err
+				});
+		})
+		.catch(err => {
+			res.status(500).json({
+				error: err,
+				message: err
+			})
+		})
 });
 
 app.put("/api/persons/:id", (req, res) => {
-	const id = parseInt(req.params.id);
+	const id = req.params.id;
 	if (!req.body.name) {
 		return res.status(404).json({
 			error: `Proprty 'name' is required to update a contact`
@@ -128,19 +165,38 @@ app.put("/api/persons/:id", (req, res) => {
 		name: req.body.name,
 		number: req.body.number
 	}
-	const person = Persons.find(p => p.id === id);
-	if (person === undefined) {
-		return res.status(404).json({
-			error: `${id} does not exist in the phonebook.`
+
+	Person.findByIdAndUpdate(id, newDetails, {
+			new: true
 		})
-	}
-	newDetails.id = person.id;
-	Persons = Persons.map(p => p.id === id ? newDetails : p)
-	res.status(201).json(newDetails);
+		.then(updatedContact => {
+			if (updatedContact) {
+				res.status(201).json(updatedContact.toJSON());
+			} else {
+				res.status(404).json({
+					error: `${newDetails.name} does not exist in the phonebook`,
+					message: `${newDetails.name} does not exist in the phonebook`
+				})
+			}
+		})
+		.catch(err => {
+			res.status(500).json({
+				error: err,
+				message: err
+			})
+		})
+
 })
 
 app.get("/info", (req, res) => {
-	res.status(200).send(`<h2>Phonebook has info for ${Persons.length}</h2><div>${new Date().toString()}</div>`)
+	Person.find({})
+		.then(docs => {
+			res.status(200).send(`<h2>Phonebook has info for ${docs.length}</h2><div>${new Date().toString()}</div>`)
+		})
+		.catch(err => res.status(500).json({
+			error: err,
+			message: err
+		}))
 });
 
 const unknownRoute = (req, res) => {
