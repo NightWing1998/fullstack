@@ -4,6 +4,11 @@ const morgan = require('morgan');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const Person = require('./models/Person');
+const {
+	unknownRoute,
+	castError,
+	generalError
+} = require("./middleware/error");
 require('dotenv').config();
 
 
@@ -17,7 +22,8 @@ const generateId = () => {
 
 mongoose.connect(process.env.DB_URI, {
 	useNewUrlParser: true,
-	useUnifiedTopology: true
+	useUnifiedTopology: true,
+	useFindAndModify: false
 }, (err) => {
 	if (err) console.log(`Cannot connect to db. \n ${err}`);
 	else console.log(`Connected to DB!!`);
@@ -49,18 +55,19 @@ app.use(cors());
 
 // app.use(morgan('tiny'));
 
-app.get("/api/persons", (req, res) => {
+app.get("/api/persons", (req, res, next) => {
 	Person.find({})
 		.then(persons => {
-			res.json(persons.map(person => person.toJSON()));
+			return res.json(persons.map(person => person.toJSON()));
 		})
-		.catch(err => res.status(500).json({
-			error: err,
-			message: err
-		}));
+		// .catch(err => res.status(500).json({
+		// 	error: err,
+		// 	message: err
+		// }));
+		.catch(err => next(err));
 });
 
-app.get("/api/persons/:id", (req, res) => {
+app.get("/api/persons/:id", (req, res, next) => {
 	let id = req.params.id;
 
 	Person.findById(id)
@@ -74,14 +81,11 @@ app.get("/api/persons/:id", (req, res) => {
 				})
 			}
 		})
-		.catch(err => res.status(500).json({
-			error: err,
-			message: err
-		}))
+		.catch(err => next(err))
 
 })
 
-app.delete("/api/persons/:id", (req, res) => {
+app.delete("/api/persons/:id", (req, res, next) => {
 	let id = req.params.id;
 	Person.findByIdAndDelete(id)
 		.then(doc => {
@@ -89,29 +93,24 @@ app.delete("/api/persons/:id", (req, res) => {
 				res.status(204).end();
 			} else {
 				res.status(404).json({
-					error: `${id} doesn not exist.`,
-					message: `${id} doesn not exist.`
+					error: `${id} does not exist.`,
+					message: `${id} does not exist.`
 				})
 			}
-		}).catch(err => {
-			console.log(err);
-			res.status(500).json({
-				error: err,
-				message: err
-			})
 		})
+		.catch(err => next(err))
 })
 
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", (req, res, next) => {
 	// console.log(req.body);
 	let count = 0;
 	if (!req.body.name) {
 		return res.status(404).json({
-			error: `Proprty 'name' is required to create a contact`
+			error: `Property 'name' is required to create a contact`
 		})
 	} else if (!req.body.number) {
 		return res.status(404).json({
-			error: `Proprty 'number' is required to create a contact`
+			error: `Property 'number' is required to create a contact`
 		})
 	}
 
@@ -120,9 +119,9 @@ app.post("/api/persons", (req, res) => {
 		})
 		.then(doc => {
 			if (doc) {
-				res.status(403).json({
-					error: `${req.body.name} already exists int the phonebook`,
-					message: `${req.body.name} already exists int the phonebook`,
+				// res.setHeader('location', '/api/persons/' + doc._id);
+				res.status(307).json({
+					id: doc._id
 				});
 				return;
 			} else {
@@ -142,23 +141,18 @@ app.post("/api/persons", (req, res) => {
 					throw err
 				});
 		})
-		.catch(err => {
-			res.status(500).json({
-				error: err,
-				message: err
-			})
-		})
+		.catch(err => next(err))
 });
 
-app.put("/api/persons/:id", (req, res) => {
+app.put("/api/persons/:id", (req, res, next) => {
 	const id = req.params.id;
 	if (!req.body.name) {
 		return res.status(404).json({
-			error: `Proprty 'name' is required to update a contact`
+			error: `Property 'name' is required to update a contact`
 		})
 	} else if (!req.body.number) {
 		return res.status(404).json({
-			error: `Proprty 'number' is required to update a contact`
+			error: `Property 'number' is required to update a contact`
 		})
 	}
 	let newDetails = {
@@ -179,33 +173,21 @@ app.put("/api/persons/:id", (req, res) => {
 				})
 			}
 		})
-		.catch(err => {
-			res.status(500).json({
-				error: err,
-				message: err
-			})
-		})
+		.catch(err => next(err))
 
 })
 
-app.get("/info", (req, res) => {
+app.get("/info", (req, res, next) => {
 	Person.find({})
 		.then(docs => {
 			res.status(200).send(`<h2>Phonebook has info for ${docs.length}</h2><div>${new Date().toString()}</div>`)
 		})
-		.catch(err => res.status(500).json({
-			error: err,
-			message: err
-		}))
+		.catch(err => next(err))
 });
 
-const unknownRoute = (req, res) => {
-	res.status(404).json({
-		error: `Route does not exists`
-	});
-}
-
 app.use(unknownRoute);
+app.use(castError);
+app.use(generalError);
 app.listen(PORT, err => {
 	if (err) console.error(err)
 });
