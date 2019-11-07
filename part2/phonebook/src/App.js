@@ -29,6 +29,11 @@ const App = () => {
 		},5000);
 	}
 
+	const clearForm = () => {
+		setNewName('');
+		setNewNumber('');
+	}
+
 	useEffect( () => {
 		personService
 		.getAll()
@@ -65,9 +70,9 @@ const App = () => {
 					createSuccess(`Successfully added ${newName} to phonebook`);
 				}
 			})
-			.catch(err => createError(err.message));
-		setNewName('');
-		setNewNumber('');
+			.catch(err => createError(err.message))
+			.finally(()=>clearForm());
+		
 	}
 
 	const handleDelete = id => {
