@@ -19,6 +19,7 @@ mongoose.connect(process.env.DB_URI, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
 	useFindAndModify: false,
+	useCreateIndex: true
 }, (err) => {
 	if (err) console.log(`Cannot connect to db. \n ${err}`);
 	else console.log(`Connected to DB!!`);
