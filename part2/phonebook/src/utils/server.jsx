@@ -6,12 +6,11 @@ const getAll = () => {
 	return request
 			.then(res => res.data)
 			.catch(err => {
-				console.log(err);
+				console.log(err, err.response);
 				if (err.response.status === 500) {
 					throw new Error("An internal server error has occured");
-				}
-				else {
-					throw new Error(err.message);
+				} else {
+					throw new Error(err.message || err.response.data.error);
 				}
 			});
 }
@@ -21,20 +20,21 @@ const create = newPerson => {
 	return request
 			.then(res => res.data)
 			.catch(err => {
-				if(err.response.status === 307){
+				console.log(err);
+				if(err.response.status === 400){
 					// THIS INDICATES THAT USER ALREADY EXISTS AND RESPONSE.DATA CONTAINS THE ID OF THAT USER
+					if (err.response.data.error && !err.response.data.id){
+						throw new Error(err.response.data.error)
+					}
 					let newPersonCopy = {...newPerson};
 					newPersonCopy.id = err.response.data.id;
-					newPersonCopy.status = 307;
+					newPersonCopy.status = 400;
 					return newPersonCopy;
 				}
-				console.log(err);
-				if(err.response.status === 404 ){
-					throw new Error(err.response.data.error)
-				} else if (err.response.status === 500){
+				if (err.response.status === 500){
 					throw new Error("An internal server error has occured");
 				} else {
-					throw new Error(err.message);
+					throw new Error(err.message || err.response.data.error);
 				}
 			});
 }
@@ -44,15 +44,13 @@ const del = (id,name) => {
 	return req
 			.then( res => res.data )
 			.catch( err => {
-				console.log(err);
-				if(err.response.status === 404){
-					throw new Error(`Cannot delete ${name}. It appears that contact does not exits`)
-				} 
-				else if(err.response.status === 500){
+				console.log(err,err.response);
+				if(err.response.status === 400){
+					throw new Error(`Cannot delete ${name} ${err.response.data.error}`)
+				} else if(err.response.status === 500){
 					throw new Error("An internal server error has occured");
-				}
-				else {
-					throw new Error(err.message);
+				} else {
+					throw new Error(err.message || err.response.data.error);
 				}
 			} );
 }
@@ -62,14 +60,14 @@ const updateContact = updtObject => {
 	return req
 			.then(res => res.data)
 			.catch(err => {
-				console.log(err);
-				if(err.response.status === 404){
-					throw new Error(err.response.data.error);
+				console.log(err, err.response);
+				if(err.response.status === 400){
+					throw new Error(`Cannot update ${updtObject.name} ${err.response.data.error}`);
 				} else if (err.response.status === 500) {
 					throw new Error("An internal server error has occured");
 				}
 				else {
-					throw new Error(err.message);
+					throw new Error(err.message || err.response.data.error);
 				}
 			});
 }

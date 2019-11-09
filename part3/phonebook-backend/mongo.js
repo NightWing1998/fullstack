@@ -7,9 +7,9 @@ const personSchema = new mongoose.Schema({
 	number: String
 }).set('toJSON', {
 	transform: (doc, returnObject) => {
-		returnObject.id = returnObject._id.toString()
-		delete returnObject._id
-		delete returnObject.__v
+		returnObject.id = returnObject._id.toString();
+		delete returnObject._id;
+		delete returnObject.__v;
 	}
 });
 
@@ -32,7 +32,7 @@ mongoose.connect(process.env.DB_URI, {
 				res.forEach(person => {
 					let pJSON = person.toJSON();
 					console.log(`${pJSON["name"]} ${pJSON["number"]}`);
-				})
+				});
 				mongoose.disconnect();
 			})
 			.catch(err => {
@@ -56,10 +56,10 @@ mongoose.connect(process.env.DB_URI, {
 						number
 					});
 					newPerson.save()
-						.then(createdPerson => {
+						.then(() => {
 							console.log(`added ${name} number ${number} to phonebook`);
 							mongoose.disconnect();
-						})
+						});
 				}
 			})
 			.catch(err => {
