@@ -25,6 +25,6 @@ app.get("/", (req, res) => {
 	res.status(200).send("Hello");
 });
 
-app.use("/api/blogs", blogRouter)
+app.use("/api/blogs", blogRouter);
 
 module.exports = app;
