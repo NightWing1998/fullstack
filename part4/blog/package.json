@@ -12,12 +12,14 @@
     "nodemon": "^1.19.4"
   },
   "devDependencies": {
-    "jest": "^24.9.0"
+    "cross-env": "^6.0.3",
+    "jest": "^24.9.0",
+    "supertest": "^4.0.2"
   },
   "scripts": {
-    "test": "jest --verbose",
-    "start": "node index.js",
-    "watch": "nodemon index.js"
+    "test": "cross-env NODE_ENV=test jest --verbose",
+    "start": "cross-env NODE_ENV=production node index.js",
+    "watch": "cross-env NODE_ENV=development nodemon index.js"
   },
   "jest": {
     "testEnvironment": "node"

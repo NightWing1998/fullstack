@@ -1,7 +1,7 @@
 const
 	app = require("./app"),
 	http = require("http"),
-	config = require("./utils/constants");
+	config = require("./utils/config");
 
 let server = http.createServer(app);
 
