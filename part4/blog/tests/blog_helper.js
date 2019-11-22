@@ -39,20 +39,12 @@ const initialBlog = [{
 		url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
 		likes: 0,
 		__v: 0
-	},
-	{
-		_id: "5a422bc61b54a676234d17fc",
-		title: "Type wars",
-		author: "Robert C. Martin",
-		url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
-		likes: 2,
-		__v: 0
 	}
 ];
 
 const removeAll = async () => {
 	await Blog.deleteMany();
-}
+};
 
 const nonExistentId = async () => {
 	const newBlog = new Blog(initialBlog[0]);
@@ -61,16 +53,16 @@ const nonExistentId = async () => {
 	await newBlog.remove();
 
 	return newBlog._id.toString();
-}
+};
 
 const blogsInDb = async () => {
 	let blogs = await Blog.find({});
 	return blogs.map(blog => blog.toJSON());
-}
+};
 
 module.exports = {
 	initialBlog,
 	removeAll,
 	blogsInDb,
 	nonExistentId
-}
+};

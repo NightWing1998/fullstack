@@ -30,8 +30,9 @@ app.get("/", (req, res) => {
 	res.status(200).send("Hello");
 });
 
-app.use("/api/blogs", blogRouter);
+app.use("/api/blog", blogRouter);
 
 app.use(middleware.unknownEndpoint);
+app.use(middleware.errorHandler);
 
 module.exports = app;
