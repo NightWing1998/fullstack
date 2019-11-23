@@ -95,6 +95,50 @@ describe("testing the /api/blog POST route", () => {
 	});
 });
 
+describe("Delete /api/blog", () => {
+	test("deleting a blog....", async () => {
+		const blogs = await blogHelper.blogsInDb();
+
+		const idToDelete = blogs[0].id;
+		await api.delete(`/api/blog/${idToDelete}`).expect(204);
+
+		const response = await blogHelper.blogsInDb();
+		expect(response.length).toBe(blogHelper.initialBlog.length - 1);
+	});
+
+	test("trying to delete a blog that does not exist", async () => {
+		const missingId = await blogHelper.nonExistentId();
+
+		await api.delete(`/api/blog/${missingId}`).expect(400);
+	});
+});
+
+describe("PUT /api/blog", () => {
+	test("Updating a blog....", async () => {
+		const blogs = await blogHelper.blogsInDb();
+
+		const updatingBlog = blogs[0];
+		updatingBlog.likes += 5;
+
+		const newBlog = await api.put(`/api/blog/${updatingBlog.id}`).send(updatingBlog).expect(201).expect("Content-Type", /application\/json/);
+
+		expect(newBlog.body).toEqual(updatingBlog);
+	});
+
+	test("Trying to update a deleted blog.....", async () => {
+		const deletedId = await blogHelper.nonExistentId();
+
+		const blog = {
+			title: "React patterns",
+			author: "Michael Chan",
+			url: "https://reactpatterns.com/",
+			likes: 12,
+		}
+
+		await api.delete(`/api/blog/${deletedId}`).send(blog).expect(400);
+	});
+});
+
 afterAll(() => {
 	mongoose.connection.close();
 });

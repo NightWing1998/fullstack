@@ -20,7 +20,7 @@ logger.info("Connecting to", constants.MONGODB_URI);
 mongoose.connect(constants.MONGODB_URI, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
-	useFindAndModify: true
+	useFindAndModify: false
 }, (err) => {
 	if (err) logger.error(err);
 	else logger.info("Connected to DB");

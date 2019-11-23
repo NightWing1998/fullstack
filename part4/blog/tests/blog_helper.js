@@ -47,7 +47,11 @@ const removeAll = async () => {
 };
 
 const nonExistentId = async () => {
-	const newBlog = new Blog(initialBlog[0]);
+	const newBlog = new Blog({
+		title: "React",
+		author: "Michael Chan 1",
+		url: "https://react.com/",
+	});
 
 	await newBlog.save();
 	await newBlog.remove();
