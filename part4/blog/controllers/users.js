@@ -7,12 +7,12 @@ const logger = require("../utils/logger");
 const saltRounds = 10;
 
 router.post("/", async (req, res, next) => {
-	const {
-		username,
-		name,
-		password
-	} = req.body;
 	try {
+		const {
+			username,
+			name,
+			password
+		} = req.body;
 		if (password.length < 3) {
 			let err = new Error("Password length should be more than 3");
 			err.name = "ValidationError";
