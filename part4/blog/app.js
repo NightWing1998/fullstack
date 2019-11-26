@@ -5,6 +5,7 @@ const
 	mongoose = require("mongoose"),
 	constants = require("./utils/config"),
 	blogRouter = require("./controllers/blogs"),
+	userRouter = require("./controllers/users"),
 	middleware = require("./utils/middleware"),
 	logger = require("./utils/logger");
 
@@ -20,7 +21,8 @@ logger.info("Connecting to", constants.MONGODB_URI);
 mongoose.connect(constants.MONGODB_URI, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
-	useFindAndModify: false
+	useFindAndModify: false,
+	useCreateIndex: true
 }, (err) => {
 	if (err) logger.error(err);
 	else logger.info("Connected to DB");
@@ -31,6 +33,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/blog", blogRouter);
+app.use("/api/user", userRouter);
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
