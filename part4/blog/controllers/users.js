@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const config = require("../utils/config");
 const logger = require("../utils/logger");
-const saltRounds = 10;
 
 router.post("/", async (req, res, next) => {
 	try {
@@ -19,7 +18,8 @@ router.post("/", async (req, res, next) => {
 			err._message = err.message;
 			throw err;
 		}
-		const passwordHash = bcrypt.hashSync(password, saltRounds);
+		const passwordHash = bcrypt.hashSync(password, config.SALT_ROUNDS);
+
 		const newUser = new User({
 			username,
 			name,
@@ -44,7 +44,7 @@ router.post("/", async (req, res, next) => {
 
 router.get("/", async (req, res, next) => {
 	try {
-		const allUsers = (await User.find({})).map(user => user.toJSON());
+		const allUsers = (await User.find({}).populate("blogs")).map(user => user.toJSON());
 		res.status(200).json(allUsers);
 	} catch (err) {
 		next(err);

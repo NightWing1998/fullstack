@@ -1,11 +1,17 @@
 const
 	router = require("express").Router(),
-	Blog = require("../models/blog");
+	Blog = require("../models/Blog"),
+	User = require("../models/User"),
+	config = require("../utils/config"),
+	jwt = require("jsonwebtoken");
 
 router.get("/", async (req, res, next) => {
 
 	try {
-		const blogs = await Blog.find({});
+		const blogs = await Blog.find({}).populate("user", {
+			username: 1,
+			name: 1
+		});
 
 		res.status(200).json(blogs.map(blog => blog.toJSON()));
 
@@ -17,7 +23,10 @@ router.get("/", async (req, res, next) => {
 router.get("/:id", async (req, res, next) => {
 	try {
 		const id = req.params.id;
-		let blog = await Blog.findById(id);
+		let blog = await Blog.findById(id).populate("user", {
+			username: 1,
+			name: 1
+		});
 		res.status(200).json(blog.toJSON());
 	} catch (err) {
 		next(err);
@@ -26,9 +35,35 @@ router.get("/:id", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
 
+	if (!req.isAuthenticated) {
+		return res.status(401).json({
+			error: "Token missing or invalid"
+		});
+	}
+
 	try {
-		let blog = new Blog(req.body);
+		// Find userid from token
+		const userFromToken = jwt.verify(req.token, config.JWT_SECRET);
+		if (!userFromToken.id) {
+			return res.status(401).json({
+				error: "Token missing or invalid"
+			});
+		}
+		// find user on the basis of token
+		const user = await User.findById(userFromToken.id);
+		if (user === null || user.username !== userFromToken.username) {
+			return res.status(401).json({
+				error: "Token missing or invalid"
+			});
+		}
+		// add userid as user in blog
+		let newBlog = req.body;
+		newBlog.user = user._id;
+		let blog = new Blog(newBlog);
 		const savedBlog = await blog.save();
+		// insert blog in user schema
+		user.blogs = user.blogs.concat(savedBlog._id);
+		await user.save();
 
 		res.status(201).json(savedBlog.toJSON());
 	} catch (err) {
@@ -38,11 +73,47 @@ router.post("/", async (req, res, next) => {
 });
 
 router.delete("/:id", async (req, res, next) => {
+
+	if (!req.isAuthenticated) {
+		return res.status(401).json({
+			error: "Token missing or invalid"
+		});
+	}
+
 	try {
+		const userFromToken = jwt.verify(req.token, config.JWT_SECRET);
+		if (!userFromToken.id) {
+			return res.status(401).json({
+				error: "Token missing or invalid"
+			});
+		}
+		const user = await User.findById(userFromToken.id);
+
+		if (user === null || user.username !== userFromToken.username) {
+			return res.status(401).json({
+				error: "Token missing or invalid"
+			});
+		}
+
 		let id = req.params.id;
+		let blog = await Blog.findById(id);
+		if (blog === null) {
+			return res.status(400).json({
+				error: "Blog does not exist."
+			})
+		}
+		if (blog.user.toString() !== userFromToken.id) {
+			return res.status(401).json({
+				error: "Error cannot delete blog. Invalid authentication."
+			});
+		}
 		let response = await Blog.findByIdAndRemove(id);
-		if (response === null) res.status(400).end();
-		else res.status(204).end();
+		if (response === null) {
+			return res.status(400).end();
+		}
+		user.blogs = user.blogs.filter(blog => blog.toString() !== response._id.toString());
+		await user.save();
+		res.status(204).end();
 	} catch (err) {
 		next(err);
 	}
