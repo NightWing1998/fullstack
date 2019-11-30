@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import blogService from "./services/blogs";
 import BlogComponent from "./components/Blog";
+import ToggleableComponent from "./components/ToggleableComponent";
 import BlogForm from "./components/newBlogForm";
+import LoginForm from "./components/loginForm";
 import loginServices from "./services/userServices";
 import "./App.css";
 
@@ -59,7 +61,7 @@ function App() {
 		}
 	}, []);
 
-	const loginForm = () => {
+	const loginFormToggleRender = () => {
 		const handleUsernameChange = ({ target }) => setUsername(target.value);
 		const handlePasswordChange = ({ target }) => setPassword(target.value);
 		const handleSubmit = async (event) => {
@@ -77,15 +79,54 @@ function App() {
 			}
 		};
 		return (
-			<form onSubmit={handleSubmit} >
-				<title>Login</title>
-				<h3>Login to Blog application</h3>
-				<div>username <input type="text" placeholder="For eg. nightwing1998" onChange={handleUsernameChange} value={username} /> </div>
-				<div>password <input type="password" onChange={handlePasswordChange} value={password} /> </div>
-				<button type="submit">Login</button>
-			</form>
-		);
+			<ToggleableComponent clickToShowText="Login" clickToHideText="Cancel">
+				<LoginForm
+					username={username}
+					handleUsername={handleUsernameChange}
+					handlePassword={handlePasswordChange}
+					password={password}
+					handleSubmit={handleSubmit}
+				/>
+			</ToggleableComponent>
+		)
 	};
+
+	const blogFormRef = React.createRef();
+
+	const blogFormToggleRender = () => {
+		const handleNewBlog = async (event) => {
+			event.preventDefault();
+			try {
+				blogFormRef.current.toggleVisibility();
+				const newBlog = await blogService.createBlog({
+					url, title, author
+				});
+				setBlogs(blogs.concat(newBlog));
+				setSuccess("Successfully created new blog!!");
+				setTitle("");
+				setAuthor("");
+				setUrl("");
+				// blogFormRef.current.toggleVisibility();
+			} catch (err) {
+				console.log(err);
+				createError("Couldn't create blog. Please try again later.");
+			}
+
+		};
+		return (
+			<ToggleableComponent ref={blogFormRef} clickToShowText="Create New Blog" clickToHideText="Cancel">
+				<BlogForm
+					title={title}
+					setTitle={setTitle}
+					author={author}
+					setAuthor={setAuthor}
+					url={url}
+					setUrl={setUrl}
+					handleSubmit={handleNewBlog}
+				/>
+			</ToggleableComponent>
+		)
+	}
 
 	const handleLogout = () => {
 		localStorage.removeItem("user");
@@ -93,45 +134,30 @@ function App() {
 		settlingUser(null);
 	};
 
-	const handleNewBlog = async (event) => {
-		event.preventDefault();
-		try {
-			const newBlog = await blogService.createBlog({
-				url, title, author
-			});
-			setBlogs(blogs.concat(newBlog));
-			setSuccess("Successfully created new blog!!");
-			setTitle("");
-			setAuthor("");
-			setUrl("");
-		} catch (err) {
-			createError("Couldn't create blog. Please try again later.");
-		}
-
-	};
-
 	return (
 		<div className="App">
+			<h3>Blogs</h3>
+			<title>Blog App</title>
 			{success !== null ? <div className="success">{success}</div> : <></>}
 			{error !== null ? <div className="error">{error}</div> : <></>}
-			{user === null ? loginForm() :
-				<div>
-					<h3>Blogs</h3>
-					<title>Blog App</title>
+			{user === null ?
+				loginFormToggleRender()
+				:
+				<>
 					<div>{user["username"]} logged in</div>
 					<div><button onClick={handleLogout}>Logout</button></div>
-					<div>{<BlogForm title={title} setTitle={setTitle} author={author} setAuthor={setAuthor} url={url} setUrl={setUrl} handleSubmit={handleNewBlog} />}</div>
-					<div>
-						{blogs.length === 0 ?
-							<></>
-							:
-							<div>
-								{blogs.map(blog => <BlogComponent blog={blog} key={blog.id} />)}
-							</div>
-						}
-					</div>
-				</div>
+					{blogFormToggleRender()}
+				</>
 			}
+			<div>
+				{blogs.length === 0 ?
+					<></>
+					:
+					<div>
+						{blogs.map(blog => <BlogComponent blog={blog} key={blog.id} createError={createError} createSuccess={createSuccess} userid={user.id} />)}
+					</div>
+				}
+			</div>
 		</div>
 	);
 }
