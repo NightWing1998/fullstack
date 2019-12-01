@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import blogServices from "../services/blogs";
+import PropTypes from "prop-types";
 
-const Blog = ({ blog, createError, createSuccess, userid }) => {
+const Blog = ({ blog, createError, createSuccess, userid, handleDelete }) => {
 
 	const [like, setLike] = useState(blog.likes);
 
@@ -18,14 +19,25 @@ const Blog = ({ blog, createError, createSuccess, userid }) => {
 		}
 	}
 
+	const confirmBeforeDelete = () => {
+		let res = window.confirm(`Are you sure you want to delete blog - ${blog.title}`);
+		if (res) {
+			handleDelete(blog);
+		}
+	}
+
 	return (
 		<div className="blog">
 			<ToggleComponenet>
 				<div className="blog__header">
-					{blog.title} {blog.author} {blog.id}
+					{blog.title} - {blog.author}
 				</div>
 				<div className="blog__footer">
-					<div className="blog__url">{blog.url}</div>
+					<div className="blog__url">
+						<a href={blog.url} target="_blank" rel="noopener noreferrer">
+							{blog.url}
+						</a>
+					</div>
 					<div className="blog__like">
 						{like}
 						<button onClick={updateLike}>Like</button>
@@ -34,12 +46,15 @@ const Blog = ({ blog, createError, createSuccess, userid }) => {
 						added by {blog.user.name}
 						{/* TODO : COMPLETE THE DELETE BLOG FUNCTIONALITY */}
 						{blog.user.id === userid ?
-							<button style="color: blue;" onClick={}>
+							<button style={{ backgroundColor: "blue", color: "white", borderRadius: 5 }} onClick={confirmBeforeDelete}>
 								Delete
 							</button>
 							:
 							<></>
 						}
+						{/* <button style={{ backgroundColor: "blue", color: "white", borderRadius: 5 }} onClick={confirmBeforeDelete}>
+							Delete
+						</button> */}
 					</div>
 				</div>
 			</ToggleComponenet>
@@ -67,5 +82,12 @@ const ToggleComponenet = props => {
 		</div>
 	)
 };
+
+Blog.propTypes = {
+	blog: PropTypes.object.isRequired,
+	createError: PropTypes.func.isRequired,
+	createSuccess: PropTypes.func.isRequired,
+	handleDelete: PropTypes.func.isRequired
+}
 
 export default Blog;

@@ -1,4 +1,5 @@
 import React, { useImperativeHandle, useState } from "react";
+import PropTypes from "prop-types";
 
 const ToggleComponenet = React.forwardRef((props, ref) => {
 	const [visisble, setVisible] = useState(false);
@@ -34,5 +35,10 @@ const ToggleComponenet = React.forwardRef((props, ref) => {
 		</div>
 	)
 });
+
+ToggleComponenet.propTypes = {
+	clickToHideText: PropTypes.string.isRequired,
+	clickToShowText: PropTypes.string.isRequired
+}
 
 export default ToggleComponenet;

@@ -1,7 +1,7 @@
 const logger = require("./logger");
 
 const requestLogger = (request, response, next) => {
-	logger.info("Remote Address: ", request.headers["x-forwarded-for"] || request.connection.remoteAddress, "Method: ", request.method, " Path:  ", request.path, "Body:  ", request.body);
+	logger.info("Host: ", request.headers["x-forwarded-host"] || request.hostname, "Remote Address: ", request.headers["x-forwarded-for"] || request.connection.remoteAddress, "Method: ", request.method, " Path:  ", request.path, "Body:  ", request.body);
 	logger.info("---");
 	next();
 };

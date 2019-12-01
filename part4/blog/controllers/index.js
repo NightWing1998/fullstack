@@ -27,11 +27,12 @@ router.post("/login", async (req, res, next) => {
 		if (savedUser !== null && bcrypt.compareSync(password, savedUser.passwordHash)) {
 			const token = jwt.sign({
 				username,
-				id: savedUser._id
+				id: savedUser._id.toString()
 			}, config.JWT_SECRET);
 			res.status(201).json({
 				token,
-				username
+				username,
+				id: savedUser._id.toString()
 			});
 		} else {
 			res.status(401).json({

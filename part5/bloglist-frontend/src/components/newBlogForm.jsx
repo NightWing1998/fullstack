@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const form = ({ title, setTitle, author, setAuthor, url, setUrl, handleSubmit }) => (
 	<div>
@@ -19,5 +20,15 @@ const form = ({ title, setTitle, author, setAuthor, url, setUrl, handleSubmit })
 		</form>
 	</div>
 );
+
+form.propTypes = {
+	title: PropTypes.string.isRequired,
+	author: PropTypes.string.isRequired,
+	url: PropTypes.string.isRequired,
+	handleSubmit: PropTypes.func.isRequired,
+	setTitle: PropTypes.func.isRequired,
+	setAuthor: PropTypes.func.isRequired,
+	setUrl: PropTypes.func.isRequired,
+}
 
 export default form;

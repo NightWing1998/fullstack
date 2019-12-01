@@ -60,12 +60,17 @@ router.post("/", async (req, res, next) => {
 		let newBlog = req.body;
 		newBlog.user = user._id;
 		let blog = new Blog(newBlog);
-		const savedBlog = await blog.save();
+		const savedBlog = (await blog.save()).toJSON();
+		savedBlog.user = {
+			username: user.username,
+			name: user.name,
+			id: user._id.toString()
+		};
 		// insert blog in user schema
-		user.blogs = user.blogs.concat(savedBlog._id);
+		user.blogs = user.blogs.concat(savedBlog.id);
 		await user.save();
 
-		res.status(201).json(savedBlog.toJSON());
+		res.status(201).json(savedBlog);
 	} catch (err) {
 		next(err);
 	}

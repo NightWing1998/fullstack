@@ -102,7 +102,7 @@ function App() {
 					url, title, author
 				});
 				setBlogs(blogs.concat(newBlog));
-				setSuccess("Successfully created new blog!!");
+				setSuccess(`Successfully created new blog - ${newBlog.title}`);
 				setTitle("");
 				setAuthor("");
 				setUrl("");
@@ -134,6 +134,16 @@ function App() {
 		settlingUser(null);
 	};
 
+	const handleBlogDelete = async (blog) => {
+		try {
+			await blogService.deleteBlog(blog);
+			setBlogs(blogs.filter(currentBlog => currentBlog.id !== blog.id));
+			createSuccess(`Successfully deleted blog - ${blog.title}`);
+		} catch (err) {
+			createError(`Could'nt delete blog. Some error occured. ${err}`);
+		}
+	}
+
 	return (
 		<div className="App">
 			<h3>Blogs</h3>
@@ -154,7 +164,16 @@ function App() {
 					<></>
 					:
 					<div>
-						{blogs.map(blog => <BlogComponent blog={blog} key={blog.id} createError={createError} createSuccess={createSuccess} userid={user.id} />)}
+						{blogs.map(blog =>
+							<BlogComponent
+								blog={blog}
+								key={blog.id}
+								createError={createError}
+								createSuccess={createSuccess}
+								handleDelete={handleBlogDelete}
+								userid={user ? user.id : null}
+							/>
+						)}
 					</div>
 				}
 			</div>
