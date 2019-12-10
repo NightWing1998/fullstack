@@ -44,7 +44,6 @@ const Blog = ({ blog, createError, createSuccess, userid, handleDelete }) => {
 					</div>
 					<div className="blog__owner">
 						added by {blog.user.name}
-						{/* TODO : COMPLETE THE DELETE BLOG FUNCTIONALITY */}
 						{blog.user.id === userid ?
 							<button style={{ backgroundColor: "blue", color: "white", borderRadius: 5 }} onClick={confirmBeforeDelete}>
 								Delete
@@ -52,9 +51,6 @@ const Blog = ({ blog, createError, createSuccess, userid, handleDelete }) => {
 							:
 							<></>
 						}
-						{/* <button style={{ backgroundColor: "blue", color: "white", borderRadius: 5 }} onClick={confirmBeforeDelete}>
-							Delete
-						</button> */}
 					</div>
 				</div>
 			</ToggleComponenet>
