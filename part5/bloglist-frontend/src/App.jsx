@@ -5,6 +5,7 @@ import ToggleableComponent from "./components/ToggleableComponent";
 import BlogForm from "./components/newBlogForm";
 import LoginForm from "./components/loginForm";
 import loginServices from "./services/userServices";
+import { useField } from "./hooks/index";
 import "./App.css";
 
 function App() {
@@ -13,12 +14,15 @@ function App() {
 	const [success, setSuccess] = useState(null);
 	const [error, setError] = useState(null);
 	const [user, setUser] = useState(null);
-	const [username, setUsername] = useState("");
-	const [password, setPassword] = useState("");
 
-	const [title, setTitle] = useState("");
-	const [author, setAuthor] = useState("");
-	const [url, setUrl] = useState("");
+	// LOGIN FORM COMPONENTS
+	const [username, usernameReset] = useField("text");
+	const [password, passwordReset] = useField("password");
+
+	// BLOG FORM COMPONENTS
+	const [title, titleReset] = useField("text");
+	const [author, authorReset] = useField("text");
+	const [url, urlReset] = useField("text");
 
 	const createSuccess = (message) => {
 		setSuccess(message.toString());
@@ -59,28 +63,26 @@ function App() {
 	}, []);
 
 	const loginFormToggleRender = () => {
-		const handleUsernameChange = ({ target }) => setUsername(target.value);
-		const handlePasswordChange = ({ target }) => setPassword(target.value);
 		const handleSubmit = async (event) => {
 			event.preventDefault();
 			try {
-				const userData = await loginServices.login({ username, password });
+				const userData = await loginServices.login({ username: username.value, password: password.value });
 				settlingUser(userData);
 				localStorage.setItem("user", JSON.stringify(userData));
-				createSuccess(`Login successfull! Welcome ${username}`);
+				createSuccess(`Login successfull! Welcome ${username.value}`);
 			} catch (err) {
 				createError("Invalid username or password");
 			} finally {
-				setUsername("");
-				setPassword("");
+				// setUsername("");
+				usernameReset();
+				// setPassword("");
+				passwordReset();
 			}
 		};
 		return (
 			<ToggleableComponent clickToShowText="Login" clickToHideText="Cancel">
 				<LoginForm
 					username={username}
-					handleUsername={handleUsernameChange}
-					handlePassword={handlePasswordChange}
 					password={password}
 					handleSubmit={handleSubmit}
 				/>
@@ -96,13 +98,13 @@ function App() {
 			try {
 				blogFormRef.current.toggleVisibility();
 				const newBlog = await blogService.createBlog({
-					url, title, author
+					url: url.value, title: title.value, author: author.value
 				});
 				setBlogs(blogs.concat(newBlog));
 				setSuccess(`Successfully created new blog - ${newBlog.title}`);
-				setTitle("");
-				setAuthor("");
-				setUrl("");
+				titleReset();
+				authorReset();
+				urlReset();
 				// blogFormRef.current.toggleVisibility();
 			} catch (err) {
 				console.log(err);
@@ -114,11 +116,8 @@ function App() {
 			<ToggleableComponent ref={blogFormRef} clickToShowText="Create New Blog" clickToHideText="Cancel">
 				<BlogForm
 					title={title}
-					setTitle={setTitle}
 					author={author}
-					setAuthor={setAuthor}
 					url={url}
-					setUrl={setUrl}
 					handleSubmit={handleNewBlog}
 				/>
 			</ToggleableComponent>
