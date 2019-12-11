@@ -8,8 +8,11 @@ const setToken = (tokenFromBackend) => {
 }
 
 const getAll = async () => {
+	const config = {
+		headers: { Authorization: token },
+	};
 	try {
-		const response = await axios.get(baseUrl);
+		const response = await axios.get(baseUrl, config);
 		return response.data;
 	} catch (err) {
 		throw err;

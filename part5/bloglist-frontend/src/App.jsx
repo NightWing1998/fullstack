@@ -45,20 +45,17 @@ function App() {
 
 	useEffect(() => {
 		(async () => {
-			try {
-				const blogsInServer = await blogService.getAll();
-				setBlogs(blogsInServer);
-			} catch (err) {
-				createError(err);
+			const userFromStorage = localStorage.getItem("user");
+			if (userFromStorage !== null && userFromStorage) {
+				settlingUser(JSON.parse(userFromStorage));
+				try {
+					const blogsInServer = await blogService.getAll();
+					setBlogs(blogsInServer);
+				} catch (err) {
+					createError(err);
+				}
 			}
 		})();
-	}, []);
-
-	useEffect(() => {
-		const userFromStorage = localStorage.getItem("user");
-		if (userFromStorage !== null || userFromStorage) {
-			settlingUser(JSON.parse(userFromStorage));
-		}
 	}, []);
 
 	const loginFormToggleRender = () => {
@@ -70,7 +67,7 @@ function App() {
 				const userData = await loginServices.login({ username, password });
 				settlingUser(userData);
 				localStorage.setItem("user", JSON.stringify(userData));
-				createSuccess("Login successfull!!");
+				createSuccess(`Login successfull! Welcome ${username}`);
 			} catch (err) {
 				createError("Invalid username or password");
 			} finally {
@@ -130,7 +127,7 @@ function App() {
 
 	const handleLogout = () => {
 		localStorage.removeItem("user");
-		localStorage.removeItem("token");
+		// localStorage.removeItem("token");
 		settlingUser(null);
 	};
 
@@ -153,30 +150,28 @@ function App() {
 			{user === null ?
 				loginFormToggleRender()
 				:
-				<>
-					<div>{user["username"]} logged in</div>
+				<div>
+					<div className="userspace">{user["username"]} logged in</div>
 					<div><button onClick={handleLogout}>Logout</button></div>
 					{blogFormToggleRender()}
-				</>
+					{blogs.length === 0 ?
+						<></>
+						:
+						<div className="blogs">
+							{blogs.map(blog =>
+								<BlogComponent
+									blog={blog}
+									key={blog.id}
+									createError={createError}
+									createSuccess={createSuccess}
+									handleDelete={handleBlogDelete}
+									userid={user.id}
+								/>
+							)}
+						</div>
+					}
+				</div>
 			}
-			<div>
-				{blogs.length === 0 ?
-					<></>
-					:
-					<div>
-						{blogs.map(blog =>
-							<BlogComponent
-								blog={blog}
-								key={blog.id}
-								createError={createError}
-								createSuccess={createSuccess}
-								handleDelete={handleBlogDelete}
-								userid={user ? user.id : null}
-							/>
-						)}
-					</div>
-				}
-			</div>
 		</div>
 	);
 }

@@ -7,6 +7,12 @@ const
 
 router.get("/", async (req, res, next) => {
 
+	if (!req.isAuthenticated) {
+		return res.status(401).json({
+			error: "Token missing or invalid"
+		});
+	}
+
 	try {
 		const blogs = await Blog.find({}).populate("user", {
 			username: 1,
