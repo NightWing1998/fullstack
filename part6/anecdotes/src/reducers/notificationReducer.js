@@ -9,12 +9,12 @@ const reducer = (state = null, action) => {
 	}
 };
 
-export const create = (message) => ({
+export const setNotification = (message) => ({
 	type: "SET_NOTIFICATION",
 	notification: message
 });
 
-export const reset = () => ({
+export const resetNotification = () => ({
 	type: "RESET"
 });
 

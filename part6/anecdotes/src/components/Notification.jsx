@@ -1,14 +1,14 @@
 import React from "react";
-import { create, reset } from "../reducers/notificationReducer";
+import { connect } from "react-redux";
 
-const Notification = ({ store }) => {
+const Notification = props => {
 	const style = {
 		border: "solid",
 		padding: 10,
 		borderWidth: 1
 	};
 
-	const { notification } = store.getState();
+	const { notification } = props;
 
 	if (notification !== null) {
 		return (
@@ -22,9 +22,8 @@ const Notification = ({ store }) => {
 
 };
 
-export default Notification;
+const mapStateToProps = state => ({
+	notification: state.notification
+});
 
-export const createNotification = (store, message) => {
-	store.dispatch(create(message));
-	setTimeout(() => store.dispatch(reset()), 5000);
-}
+export default connect(mapStateToProps)(Notification);

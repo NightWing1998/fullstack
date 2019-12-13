@@ -1,15 +1,12 @@
 import React from "react";
+import { connect } from "react-redux";
 import { create, clear } from "../reducers/filterReducer";
 
-const Filter = ({ store }) => {
+const Filter = props => {
 	const handleChange = (event) => {
 		const filter = event.target.value;
-		store.dispatch(create(filter));
+		props.setFilter(filter)
 	};
-
-	const handleClear = () => {
-		store.dispatch(clear());
-	}
 
 	const style = {
 		marginBottom: 10
@@ -17,10 +14,16 @@ const Filter = ({ store }) => {
 
 	return (
 		<div style={style}>
-			filter <input onChange={handleChange} value={store.getState().filter} />
-			<button onClick={handleClear}>reset</button>
+			filter <input onChange={handleChange} value={props.filter} />
+			<button onClick={props.clearFilter}>reset</button>
 		</div>
 	);
 };
 
-export default Filter;
+const mapStateToProps = (state) => ({ filter: state.filter });
+const mapDispatchToProps = {
+	setFilter: create,
+	clearFilter: clear
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Filter);
