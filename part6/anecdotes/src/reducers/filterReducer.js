@@ -11,11 +11,11 @@ const reducer = (state = "", action) => {
 
 export default reducer;
 
-export const create = filter => ({
+export const setFilter = filter => ({
 	type: "SET_FILTER",
 	filter
 });
 
-export const clear = () => ({
+export const clearFilter = () => ({
 	type: "CLEAR_FILTER"
 });

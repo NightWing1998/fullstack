@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Anecdotes from './components/Anecdotes';
 import AnecdoteForm from './components/NewAnecdote';
 import Notification from './components/Notification';
+import { connect } from "react-redux";
+import { initalizeAnecdotes } from "./reducers/anecdoteReducer";
 
-const App = () => {
+const App = props => {
+
+	const { initalizeAnecdotesInStore } = props;
+
+	useEffect(() => {
+		(async () => {
+			initalizeAnecdotesInStore();
+		})();
+	});
+
 	return (
 		<div>
 			<Notification />
@@ -13,4 +24,8 @@ const App = () => {
 	);
 };
 
-export default App;
+const mapDispatchToProps = {
+	initalizeAnecdotesInStore: initalizeAnecdotes
+}
+
+export default connect(null, mapDispatchToProps)(App);

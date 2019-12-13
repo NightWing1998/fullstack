@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
-import { vote } from "../reducers/anecdoteReducer";
-import { setNotification, resetNotification } from "../reducers/notificationReducer";
+import { voteForAnecdote } from "../reducers/anecdoteReducer";
+import { setNotification } from "../reducers/notificationReducer";
 import Filter from "./Filter";
 
 const Anecdote = ({ content, id, votes, handleVote }) => (
@@ -18,9 +18,9 @@ const Anecdote = ({ content, id, votes, handleVote }) => (
 
 const Anecdotes = props => {
 
-	const handleVote = (id, content) => {
-		props.addVote(id);
-		props.setNotification(`you voted '${content}'`);
+	const handleVote = async (id, content) => {
+		props.voteForAnecdote(id);
+		props.setNotification(`you voted '${content}'`, 5);
 	};
 
 	return (
@@ -36,14 +36,9 @@ const mapStateToProps = state => ({
 	anecdotesToShow: [...state.anecdotes.sort((a, b) => b.votes - a.votes)].filter(({ content }) => content.includes(state.filter))
 });
 
-const mapDispatchToProps = dispatch => {
-	return {
-		addVote: id => dispatch(vote(id)),
-		setNotification: message => {
-			dispatch(setNotification(message));
-			setTimeout(() => dispatch(resetNotification()), 5000);
-		}
-	};
+const mapDispatchToProps = {
+	voteForAnecdote,
+	setNotification
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Anecdotes);
