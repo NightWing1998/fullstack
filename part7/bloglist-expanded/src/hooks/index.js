@@ -18,3 +18,7 @@ export const useField = type => {
 		onReset
 	}, reset];
 };
+
+export default {
+	useField
+};

@@ -1,7 +1,9 @@
 const reducer = (state = null, action) => {
 	switch (action.type) {
 		case "SET_NOTIFICATION":
-			return action.notification;
+			return {
+				message: action.message, category: action.category
+			};
 		case "RESET":
 			return null;
 		default:
@@ -9,18 +11,19 @@ const reducer = (state = null, action) => {
 	}
 };
 
-const createNotification = (message) => ({
+const createNotification = (message, category) => ({
 	type: "SET_NOTIFICATION",
-	notification: message
+	message,
+	category
 });
 
 const resetNotification = () => ({
 	type: "RESET"
 });
 
-export const setNotification = (message, secs) => (
-	async dispatch => {
-		dispatch(createNotification(message));
+export const setNotification = (message, category, secs) => (
+	dispatch => {
+		dispatch(createNotification(message.toString(), category));
 		setTimeout(() => dispatch(resetNotification()), secs * 1000);
 	}
 );

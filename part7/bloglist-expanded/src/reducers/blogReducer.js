@@ -8,8 +8,8 @@ const reducer = (state = [], action) => {
 			let id = action.blog.id;
 			return state.map(blog => blog.id === id ? action.blog : blog);
 		case "REMOVE_BLOG":
-			let id = action.blog.id;
-			return state.filter(blog => blog.id !== id);
+			let idToRemove = action.blog.id;
+			return state.filter(blog => blog.id !== idToRemove);
 		case "INITIALISE_BLOGS":
 			return action.blogs;
 		default:
@@ -49,7 +49,7 @@ export const update = blog => (
 	}
 );
 
-export const initialiseBlgos = () => (
+export const initialiseBlogs = () => (
 	async dispatch => {
 		const blogs = await blogService.getAll();
 		dispatch({
