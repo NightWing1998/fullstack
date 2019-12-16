@@ -27,6 +27,11 @@ router.get("/", async (req, res, next) => {
 });
 
 router.get("/:id", async (req, res, next) => {
+	if (!req.isAuthenticated) {
+		return res.status(401).json({
+			error: "Token missing or invalid"
+		});
+	}
 	try {
 		const id = req.params.id;
 		let blog = await Blog.findById(id).populate("user", {

@@ -34,8 +34,8 @@ app.get("/", (req, res) => {
 });
 
 app.use(middleware.tokenExtractor);
-app.use("/api/blog", blogRouter);
-app.use("/api/user", userRouter);
+app.use("/api/blogs", blogRouter);
+app.use("/api/users", userRouter);
 app.use("/api/", indexRouter);
 
 app.use(middleware.unknownEndpoint);
