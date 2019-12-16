@@ -1,4 +1,6 @@
-import userServices from "../services/userServices";
+import {
+	login as loginService
+} from "../services/loginService";
 import blogService from "../services/blogs";
 
 const reducer = (state = null, action) => {
@@ -26,7 +28,7 @@ const settlingUser = (userData) => {
 
 export const login = creds => (
 	async dispatch => {
-		const user = await userServices.login(creds);
+		const user = await loginService(creds);
 		settlingUser(user);
 		localStorage.setItem("user", JSON.stringify(user));
 		dispatch({
@@ -44,6 +46,10 @@ export const logout = () => (
 		dispatch({
 			type: "LOGOUT"
 		});
+		dispatch({
+			type: "INITALISE_BLOGS",
+			blogs: []
+		})
 	}
 );
 

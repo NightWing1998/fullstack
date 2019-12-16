@@ -1,7 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
+
+import BlogForm from "./newBlogForm";
+import ToggleableComponent from "./ToggleableComponent";
+
 import { remove as deleteBlog, update as updateBlog } from "../reducers/blogReducer";
 import { setNotification } from "../reducers/notificationReducer";
 import { connect } from "react-redux";
+
+import { Route, Link, BrowserRouter as Router } from "react-router-dom";
 
 const Blog = ({ blog, userid, updateLike, handleDelete }) => {
 
@@ -14,52 +20,29 @@ const Blog = ({ blog, userid, updateLike, handleDelete }) => {
 
 	return (
 		<div className="blog">
-			<ToggleComponenet>
-				<div className="blog__header">
-					{blog.title} - {blog.author}
+			<h2 className="blog__header">
+				{blog.title} - {blog.author}
+			</h2>
+			<div className="blog__footer">
+				<div className="blog__url">
+					<a href={blog.url} target="_blank" rel="noopener noreferrer">
+						{blog.url}
+					</a>
 				</div>
-				<div className="blog__footer">
-					<div className="blog__url">
-						<a href={blog.url} target="_blank" rel="noopener noreferrer">
-							{blog.url}
-						</a>
-					</div>
-					<div className="blog__like">
-						{blog.likes}
-						<button onClick={() => updateLike(blog)}>Like</button>
-					</div>
-					<div className="blog__owner">
-						added by {blog.user.name}
-						{blog.user.id === userid ?
-							<button style={{ backgroundColor: "blue", color: "white", borderRadius: 5 }} onClick={confirmBeforeDelete}>
-								Delete
+				<div className="blog__like">
+					{blog.likes} likes
+					<button onClick={() => updateLike(blog)}>Like</button>
+				</div>
+				<div className="blog__owner">
+					added by {blog.user.name}
+					{blog.user.id === userid ?
+						<button style={{ backgroundColor: "blue", color: "white", borderRadius: 5 }} onClick={confirmBeforeDelete}>
+							Delete
 							</button>
-							:
-							<></>
-						}
-					</div>
+						:
+						<></>
+					}
 				</div>
-			</ToggleComponenet>
-		</div>
-	)
-};
-
-const ToggleComponenet = props => {
-	const [visisble, setVisible] = useState(false);
-
-	const showStyle = { display: visisble ? "" : "none" };
-
-	const toggleVisibility = () => {
-		setVisible(!visisble);
-	}
-
-	return (
-		<div className="toggle__blog" >
-			<div className="staticPart" onClick={toggleVisibility}>
-				{props.children[0]}
-			</div>
-			<div style={showStyle}>
-				{props.children[1]}
 			</div>
 		</div>
 	)
@@ -69,6 +52,7 @@ const Blogs = props => {
 	const { blogs, user, deleteBlog, setNotification, updateBlog } = props;
 
 	if (user === null || blogs === null) {
+		console.log("null received.returning...");
 		return <></>;
 	}
 
@@ -92,19 +76,48 @@ const Blogs = props => {
 		}
 	};
 
+	const blogFormToggleRender = () => {
+		return (
+			<ToggleableComponent clickToShowText="Create New Blog" clickToHideText="Cancel">
+				<BlogForm />
+			</ToggleableComponent>
+		)
+	};
+
+	const mapIdToBlog = id => blogs.find(blog => blog.id === id);
+
 	return (
-		<div className="blogs">
-			{blogs.map(blog =>
-				<Blog
-					blog={blog}
-					key={blog.id}
-					handleDelete={handleBlogDelete}
-					userid={user.id}
-					setNotification={setNotification}
-					updateLike={updateLike}
+		<Router>
+			<div className="blogs">
+				<Route exact path="/blogs" >
+					<div>
+						{blogFormToggleRender()}
+						<ul>
+							{blogs.map(blog => (
+								<li key={blog.id} className="blog">
+									<Link to={`/blogs/${blog.id}`} className="blog__header" >{`${blog.title} - ${blog.author}`}</Link>
+								</li>
+							))}
+						</ul>
+					</div>
+				</Route>
+				<Route
+					exact
+					path="/blogs/:id"
+					render={({ match }) => {
+						const blog = mapIdToBlog(match.params.id);
+						return <Blog
+							blog={blog}
+							key={blog.id}
+							handleDelete={handleBlogDelete}
+							userid={user.id}
+							setNotification={setNotification}
+							updateLike={updateLike}
+						/>;
+					}}
 				/>
-			)}
-		</div>
+			</div>
+		</Router>
 	);
 
 };

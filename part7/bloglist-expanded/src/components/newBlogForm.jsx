@@ -6,6 +6,8 @@ import { create as createBlog } from "../reducers/blogReducer";
 import { setNotification } from "../reducers/notificationReducer";
 import { connect } from "react-redux";
 
+import { withRouter } from "react-router-dom";
+
 const Form = props => {
 
 	const { createBlog, setNotification } = props;
@@ -25,6 +27,7 @@ const Form = props => {
 			titleReset();
 			authorReset();
 			urlReset();
+			props.history.push("/blogs");
 		} catch (err) {
 			console.log(err);
 			setNotification("Couldn't create blog. Please try again later.", "error", 5);
@@ -58,4 +61,4 @@ const mapDispatchToProps = {
 	setNotification
 };
 
-export default connect(null, mapDispatchToProps)(Form);
+export default connect(null, mapDispatchToProps)(withRouter(Form));

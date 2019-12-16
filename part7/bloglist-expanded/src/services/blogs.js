@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = "/api/blog";
+const baseUrl = "/api/blogs";
 
 let token = null;
 
