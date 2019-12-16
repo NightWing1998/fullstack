@@ -51,4 +51,13 @@ router.get("/", async (req, res, next) => {
 	}
 });
 
+router.get("/:id", async (req, res, next) => {
+	try {
+		const oneUser = await User.findById(req.params.id).populate("blogs");
+		res.status(200).json(oneUser.toJSON());
+	} catch (err) {
+		next(err);
+	}
+});
+
 module.exports = router;
