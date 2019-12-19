@@ -19,7 +19,8 @@ const blogSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "User",
 		required: true
-	}
+	},
+	comments : [String]
 }).set("toJSON", {
 	transform: (doc, returnObject) => {
 		returnObject.id = returnObject._id.toString();

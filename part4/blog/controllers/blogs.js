@@ -44,6 +44,16 @@ router.get("/:id", async (req, res, next) => {
 	}
 });
 
+router.post("/:id/comments",async (req,res,next) => {
+	const id = req.params.id;
+	try{
+		const blog = await Blog.findById(id);
+		const comments = [...blog.comments,req.body.comment];
+		const updatedBlog = await Blog.findByIdAndUpdate(id,{...blog, comments},{new : true});
+		res.status(201).json(updatedBlog.toJSON());
+	}catch(err){next(err);};
+});
+
 router.post("/", async (req, res, next) => {
 
 	if (!req.isAuthenticated) {
