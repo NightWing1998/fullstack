@@ -4,6 +4,8 @@ import { comment as addComment } from "../reducers/blogReducer";
 import { useField } from "../hooks";
 import { setNotification } from "../reducers/notificationReducer";
 
+import { Form, Button, Icon } from "semantic-ui-react";
+
 const CommentForm = props => {
 
 	const { id, addComment, setNotification } = props;
@@ -21,11 +23,14 @@ const CommentForm = props => {
 	}
 
 	return (
-		<form onSubmit={handleComment}>
-			<input {...comment} />
-			<button type="submit">Add comment</button>
-			<button type="reset" onClick={resetComment}>Clear comment</button>
-		</form>
+		<Form onSubmit={handleComment} >
+			<Form.Group inline>
+				<Form.Input {...comment} />
+				<Button icon type="submit" circular>
+					<Icon name="add" />
+				</Button>
+			</Form.Group>
+		</Form>
 	);
 };
 

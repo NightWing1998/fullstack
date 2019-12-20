@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { login } from "../reducers/userReducer";
 import { setNotification } from "../reducers/notificationReducer";
 import { withRouter } from "react-router-dom";
+import { Header } from "semantic-ui-react";
 
 const LoginForm = props => {
 
@@ -33,7 +34,7 @@ const LoginForm = props => {
 
 	return (
 		<div id="login">
-			<h2>Login</h2>
+			<Header sub>Login</Header>
 			<form onSubmit={handleSubmit}>
 				<div>
 					Username <input {...username} />

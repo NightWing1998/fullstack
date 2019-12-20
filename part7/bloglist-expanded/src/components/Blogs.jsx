@@ -3,6 +3,8 @@ import React from "react";
 import BlogForm from "./newBlogForm";
 import ToggleableComponent from "./ToggleableComponent";
 
+import { Header, Table } from "semantic-ui-react";
+
 import { connect } from "react-redux";
 
 import { Link } from "react-router-dom";
@@ -25,18 +27,22 @@ const Blogs = props => {
 
 	return (
 		<div className="blogs">
-			<div>
-				{blogFormToggleRender()}
-			</div>
-			<div>
-				<ul>
+			<Header as="h1" dividing>Blogs</Header>
+			{blogFormToggleRender()}
+			<Table striped celled>
+				<Table.Body>
 					{blogs.map(blog => (
-						<li key={blog.id} className="blog">
-							<Link to={`/blogs/${blog.id}`} className="blog__header" >{`${blog.title} - ${blog.author}`}</Link>
-						</li>
+						<Table.Row key={blog.id}>
+							<Table.Cell>
+								<Link to={`/blogs/${blog.id}`}>
+									{blog.title}
+								</Link>
+							</Table.Cell>
+							<Table.Cell>{blog.author}</Table.Cell>
+						</Table.Row>
 					))}
-				</ul>
-			</div>
+				</Table.Body>
+			</Table>
 		</div>
 	);
 

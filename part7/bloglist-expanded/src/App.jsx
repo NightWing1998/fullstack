@@ -17,22 +17,34 @@ import { BrowserRouter as Router, Route, Link, Redirect } from "react-router-dom
 
 import { connect } from "react-redux";
 
+import { Container, Menu as Navbar, Button } from 'semantic-ui-react';
+import { useState } from "react";
+
 const MenuWithoutConnect = props => {
-	const style = { padding: 5 };
 	const { user, logout } = props;
+	const [activePage, setPage] = useState("blogs");
 	return (
-		<div className="menu">
-			<Link to="/blogs" style={style}>Blogs</Link>
-			<Link to="/users" style={style}>Users</Link>
+		<Navbar className="menu" stackable pointing>
+			<Navbar.Item active={activePage === "blogs"} >
+				<Link onClick={() => setPage("blogs")} to="/blogs" style={{ color: "inherit" }} >Blogs</Link>
+			</Navbar.Item>
+			<Navbar.Item active={activePage === "users"} >
+				<Link onClick={() => setPage("users")} to="/users" style={{ color: "inherit" }}>Users</Link>
+			</Navbar.Item>
 			{user === null ?
-				<Link to="/login" style={style}>Login</Link>
+				<Navbar.Item active={activePage === "login"} >
+					<Link onClick={() => setPage("login")} to="/login" style={{ color: "inherit" }} >Login</Link>
+				</Navbar.Item>
 				:
-				<span style={style}>
-					{user["username"]} logged in
-					<button onClick={logout}>Logout</button>
-				</span>
+				<>
+					<Navbar.Item name={user["username"]} position="right">
+					</Navbar.Item>
+					<Navbar.Item link onClick={logout} >
+						<Button>Logout</Button>
+					</Navbar.Item>
+				</>
 			}
-		</div>
+		</Navbar>
 	);
 }
 
@@ -72,9 +84,8 @@ function App(props) {
 
 	return (
 		<Router>
-			<div className="App">
+			<Container className="App">
 				<Menu />
-				<h3>Blogs</h3>
 				<title>Blog App</title>
 				<Notification />
 				<Route exact path="/login" render={() => <LoginForm />} />
@@ -89,7 +100,7 @@ function App(props) {
 						<Route exact path="/blogs" render={() => <Blogs />} />
 					</div>
 				}
-			</div>
+			</Container>
 		</Router>
 	);
 }

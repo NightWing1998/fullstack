@@ -3,6 +3,7 @@ import React from "react";
 import { connect } from "react-redux";
 
 import { Redirect } from "react-router-dom";
+import { Header } from "semantic-ui-react";
 
 const User = props => {
 	const { user } = props;
@@ -12,7 +13,8 @@ const User = props => {
 	return (
 		name ?
 			<div>
-				<h2>{name}</h2>
+				<Header as="h1">Users</Header>
+				<Header sub>{name}</Header>
 				<strong>added blogs</strong>
 				<ul>
 					{blogs.map(blog => (

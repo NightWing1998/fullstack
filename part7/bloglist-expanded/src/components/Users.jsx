@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
+import { Header } from "semantic-ui-react";
 
 const Users = props => {
 	const { users } = props;
@@ -11,9 +12,9 @@ const Users = props => {
 
 	return (
 		<div className="users">
-			<h2>
+			<Header as="h1" dividing>
 				Users
-				</h2>
+			</Header>
 			<ul>
 				{users.map(user => (
 					<li key={user.id}>

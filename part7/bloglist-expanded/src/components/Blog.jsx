@@ -5,6 +5,8 @@ import CommentForm from "./commentForm";
 import { remove as deleteBlog, update as updateBlog } from "../reducers/blogReducer";
 import { setNotification } from "../reducers/notificationReducer";
 
+import { Card, Header, Comment, Button, Icon, Label } from "semantic-ui-react";
+
 import { withRouter, Redirect } from "react-router-dom";
 
 import { connect } from "react-redux";
@@ -46,43 +48,61 @@ const Blog = props => {
 	};
 
 	return (
-		<div className="blog">
-			<h2 className="blog__header">
-				{blog.title} - {blog.author}
-			</h2>
-			<div className="blog__footer">
-				<div className="blog__url">
-					<a href={blog.url} target="_blank" rel="noopener noreferrer">
-						{blog.url}
-					</a>
-				</div>
-				<div className="blog__like">
-					{blog.likes} likes
-					<button onClick={() => updateLike(blog)}>Like</button>
-				</div>
-				<div className="blog__owner">
+		<Card fluid className="blog">
+			<Card.Content>
+				<Card.Header className="blog__header" >
+					{blog.title}
+				</Card.Header>
+				<Card.Meta > by {blog.author}</Card.Meta>
+			</Card.Content>
+			<Card.Content className="blog__footer">
+				<Card.Description className="blog__url">
+					<Header as="h5">
+						Link :
+						<a href={blog.url} target="_blank" rel="noopener noreferrer">
+							{blog.url}
+						</a>
+					</Header>
+				</Card.Description>
+				<Button as='div' labelPosition='right' size="mini">
+					<Button color='red' onClick={() => updateLike(blog)} size="mini">
+						<Icon name='heart' />
+						Like
+					</Button>
+					<Label as='a' basic color='red' pointing='left'>
+						{blog.likes}
+					</Label>
+				</Button>
+				<Comment.Group className="blog__comments">
+					<Header as='h3' sub dividing>
+						Comments
+						</Header>
+					{blog.comments.map((comment, index) => (
+						<Comment key={index}>
+							<Comment.Content>
+								<Comment.Text>
+									{comment}
+								</Comment.Text>
+							</Comment.Content>
+						</Comment>
+					))}
+					<CommentForm id={blog.id} />
+				</Comment.Group>
+			</Card.Content>
+			<Card.Content extra>
+				<Header as="h5" sub>
 					added by {blog.user.name}
-					{blog.user.id === user.id ?
-						<button style={{ backgroundColor: "blue", color: "white", borderRadius: 5 }} onClick={confirmBeforeDelete}>
-							Delete
-							</button>
-						:
-						<></>
-					}
-				</div>
-				<h2>Comments</h2>
-				<CommentForm id={blog.id} />
-				<div className="blog__comments">
-					<ul>
-						{blog.comments.map((comment, index) => (
-							<li key={index} className="comment">
-								{comment}
-							</li>
-						))}
-					</ul>
-				</div>
-			</div>
-		</div>
+				</Header>
+				{blog.user.id === user.id ?
+					<Button icon labelPosition="left" onClick={confirmBeforeDelete} size="mini" color="yellow">
+						<Icon name="warning sign" />
+						Delete
+						</Button>
+					:
+					<></>
+				}
+			</Card.Content>
+		</Card>
 	);
 }
 
