@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
 import LoginForm from "./components/loginForm";
 import Blogs from "./components/Blogs";
+import Blog from "./components/Blog";
 import Users from "./components/Users";
+import User from "./components/User";
 import Notification from "./components/Notification";
 
 import "./App.css";
@@ -81,7 +83,9 @@ function App(props) {
 					:
 					<div>
 						<Route exact path="/" render={() => <Redirect to="/blogs" />} />
-						<Route path="/users" render={() => <Users />} />
+						<Route exact path="/users/:id" render={({ match }) => <User id={match.params.id} />} />
+						<Route exact path="/users" render={() => <Users />} />
+						<Route exact path="/blogs/:id" render={({ match }) => <Blog id={match.params.id} />} />
 						<Route exact path="/blogs" render={() => <Blogs />} />
 					</div>
 				}

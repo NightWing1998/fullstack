@@ -49,6 +49,16 @@ export const update = blog => (
 	}
 );
 
+export const comment = (comment, id) => (
+	async dispatch => {
+		const blogWithComment = await blogService.commentOnBlog(comment, id);
+		dispatch({
+			type: "UPDATE_BLOG",
+			blog: blogWithComment
+		});
+	}
+);
+
 export const initialiseBlogs = () => (
 	async dispatch => {
 		const blogs = await blogService.getAll();

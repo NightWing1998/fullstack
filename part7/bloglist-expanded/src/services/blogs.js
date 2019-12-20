@@ -3,11 +3,11 @@ const baseUrl = "/api/blogs";
 
 let token = null;
 
-const setToken = (tokenFromBackend) => {
+export const setToken = (tokenFromBackend) => {
 	token = `bearer ${tokenFromBackend}`;
-}
+};
 
-const getAll = async () => {
+export const getAll = async () => {
 	const config = {
 		headers: {
 			Authorization: token
@@ -21,7 +21,7 @@ const getAll = async () => {
 	}
 };
 
-const createBlog = async (blog) => {
+export const createBlog = async (blog) => {
 	const config = {
 		headers: {
 			Authorization: token
@@ -29,9 +29,9 @@ const createBlog = async (blog) => {
 	}
 	const createdBlog = await axios.post(baseUrl, blog, config);
 	return createdBlog.data;
-}
+};
 
-const updateBlog = async (blog) => {
+export const updateBlog = async (blog) => {
 	const config = {
 		headers: {
 			Authorization: token
@@ -43,21 +43,29 @@ const updateBlog = async (blog) => {
 	editedBlog.user = editedBlog.user.id;
 	const updatedBlog = await axios.put(`${baseUrl}/${blog.id}`, editedBlog, config);
 	return updatedBlog.data;
-}
+};
 
-const deleteBlog = async (blog) => {
+export const deleteBlog = async (blog) => {
 	const config = {
 		headers: {
 			Authorization: token
 		},
 	};
 	await axios.delete(`${baseUrl}/${blog.id}`, config);
-}
+};
+
+export const commentOnBlog = async (comment, id) => {
+	const updatedBlog = await axios.post(`${baseUrl}/${id}/comments`, {
+		comment
+	});
+	return updatedBlog.data;
+};
 
 export default {
 	getAll,
 	createBlog,
 	setToken,
 	updateBlog,
-	deleteBlog
+	deleteBlog,
+	commentOnBlog
 };
