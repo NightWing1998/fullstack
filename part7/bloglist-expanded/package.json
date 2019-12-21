@@ -22,7 +22,8 @@
     "eject": "react-scripts eject",
     "watch": "cd ../../part4/blog/ && npm run watch & cd ../../part7/bloglist-expanded && react-scripts start",
     "eslint": "eslint .",
-    "cypress:open": "cypress open"
+    "cypress:open": "cypress open",
+    "build:webpack": "webpack --mode=production"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -41,11 +42,21 @@
   },
   "proxy": "http://localhost:3000",
   "devDependencies": {
+    "@babel/core": "^7.7.7",
+    "@babel/polyfill": "^7.7.0",
+    "@babel/preset-env": "^7.7.7",
+    "@babel/preset-react": "^7.7.4",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
+    "babel-loader": "^8.0.6",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^3.4.0",
     "cypress": "^3.8.0",
     "eslint-plugin-cypress": "^2.8.1",
     "eslint-plugin-jest": "^23.1.1",
-    "eslint-plugin-react": "^7.17.0"
+    "eslint-plugin-react": "^7.17.0",
+    "style-loader": "^1.1.1",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.1"
   }
 }
