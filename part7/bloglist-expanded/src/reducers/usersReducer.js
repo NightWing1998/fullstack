@@ -4,11 +4,11 @@ import {
 
 const reducer = (state = [], action) => {
 	switch (action.type) {
-		case "INITIALISE_USERS":
-			return action.users;
-		default:
-			return state;
-	};
+	case "INITIALISE_USERS":
+		return action.users;
+	default:
+		return state;
+	}
 };
 
 export default reducer;

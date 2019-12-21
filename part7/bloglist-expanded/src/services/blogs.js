@@ -13,12 +13,8 @@ export const getAll = async () => {
 			Authorization: token
 		},
 	};
-	try {
-		const response = await axios.get(baseUrl, config);
-		return response.data;
-	} catch (err) {
-		throw err;
-	}
+	const response = await axios.get(baseUrl, config);
+	return response.data;
 };
 
 export const createBlog = async (blog) => {
@@ -26,7 +22,7 @@ export const createBlog = async (blog) => {
 		headers: {
 			Authorization: token
 		},
-	}
+	};
 	const createdBlog = await axios.post(baseUrl, blog, config);
 	return createdBlog.data;
 };

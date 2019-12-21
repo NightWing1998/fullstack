@@ -5,14 +5,14 @@ import blogService from "../services/blogs";
 
 const reducer = (state = null, action) => {
 	switch (action.type) {
-		case "LOGIN":
-			return action.user;
-		case "LOGOUT":
-			return null;
-		case "CACHE":
-			return action.user;
-		default:
-			return state;
+	case "LOGIN":
+		return action.user;
+	case "LOGOUT":
+		return null;
+	case "CACHE":
+		return action.user;
+	default:
+		return state;
 	}
 };
 
@@ -49,7 +49,7 @@ export const logout = () => (
 		dispatch({
 			type: "INITALISE_BLOGS",
 			blogs: []
-		})
+		});
 	}
 );
 

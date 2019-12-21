@@ -3,13 +3,13 @@ import {
 } from "react";
 
 export const useField = type => {
-	const [value, setValue] = useState('');
+	const [value, setValue] = useState("");
 
 	const onChange = event => setValue(event.target.value);
 
-	const onReset = () => setValue('');
+	const onReset = () => setValue("");
 
-	const reset = () => setValue('');
+	const reset = () => setValue("");
 
 	return [{
 		type,

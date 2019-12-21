@@ -64,7 +64,7 @@ const Blog = props => {
 						</a>
 					</Header>
 				</Card.Description>
-				<Button as='div' labelPosition='right' size="mini">
+				<Button as='div' labelPosition='right' size="mini" className="blog__like">
 					<Button color='red' onClick={() => updateLike(blog)} size="mini">
 						<Icon name='heart' />
 						Like

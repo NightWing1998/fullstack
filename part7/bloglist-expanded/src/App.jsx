@@ -64,6 +64,7 @@ function App(props) {
 				try {
 					await initialiseBlogs();
 					await getAllUsers();
+					// setNotification("Fetch successfull", "success", 5);
 				} catch (err) {
 					setNotification(err, "error", 5);
 				}
@@ -80,7 +81,7 @@ function App(props) {
 				}
 			}
 		})();
-	}, []);
+	});
 
 	return (
 		<Router>

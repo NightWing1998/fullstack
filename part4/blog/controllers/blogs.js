@@ -160,6 +160,9 @@ router.put("/:id", async (req, res, next) => {
 		const id = req.params.id;
 		const updatedBlog = await Blog.findByIdAndUpdate(id, req.body, {
 			new: true
+		}).populate("user", {
+			username: 1,
+			name: 1
 		});
 		res.status(201).json(updatedBlog.toJSON());
 	} catch (err) {

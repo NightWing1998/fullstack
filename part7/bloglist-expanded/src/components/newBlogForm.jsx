@@ -40,16 +40,16 @@ const Form = props => {
 			<h3>Create Blog</h3>
 			<form onSubmit={handleSubmit}>
 				<div>
-					Title <input {...title} />
+					Title <input {...title} id="title" />
 				</div>
 				<div>
-					Author <input {...author} />
+					Author <input {...author} id="author" />
 				</div>
 				<div>
-					URL <input {...url} />
+					URL <input {...url} id="url" />
 				</div>
 				<div>
-					<button type="submit">Create Blog</button>
+					<button type="submit">+</button>
 				</div>
 			</form>
 		</div>

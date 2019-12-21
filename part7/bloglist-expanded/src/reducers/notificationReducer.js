@@ -1,13 +1,13 @@
 const reducer = (state = null, action) => {
 	switch (action.type) {
-		case "SET_NOTIFICATION":
-			return {
-				message: action.message, category: action.category
-			};
-		case "RESET":
-			return null;
-		default:
-			return state;
+	case "SET_NOTIFICATION":
+		return {
+			message: action.message, category: action.category
+		};
+	case "RESET":
+		return null;
+	default:
+		return state;
 	}
 };
 

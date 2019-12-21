@@ -34,7 +34,7 @@ const Blogs = props => {
 					{blogs.map(blog => (
 						<Table.Row key={blog.id}>
 							<Table.Cell>
-								<Link to={`/blogs/${blog.id}`}>
+								<Link to={`/blogs/${blog.id}`} className="blog__link">
 									{blog.title}
 								</Link>
 							</Table.Cell>

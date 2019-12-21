@@ -21,7 +21,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "watch": "cd ../../part4/blog/ && npm run watch & cd ../../part7/bloglist-expanded && react-scripts start",
-    "eslint": "eslint ."
+    "eslint": "eslint .",
+    "cypress:open": "cypress open"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -42,6 +43,8 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
+    "cypress": "^3.8.0",
+    "eslint-plugin-cypress": "^2.8.1",
     "eslint-plugin-jest": "^23.1.1",
     "eslint-plugin-react": "^7.17.0"
   }

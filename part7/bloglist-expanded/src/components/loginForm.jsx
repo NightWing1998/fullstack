@@ -37,13 +37,13 @@ const LoginForm = props => {
 			<Header sub>Login</Header>
 			<form onSubmit={handleSubmit}>
 				<div>
-					Username <input {...username} />
+					Username <input {...username} id="username" />
 				</div>
 				<div>
-					Password <input {...password} />
+					Password <input {...password} id="password" />
 				</div>
 				<div>
-					<button type="submit">Login</button>
+					<button type="submit">Log in</button>
 				</div>
 			</form>
 		</div>

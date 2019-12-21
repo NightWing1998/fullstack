@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom/extend-expect';
+import "@testing-library/jest-dom/extend-expect";
 
 let storage = {};
 
@@ -9,6 +9,6 @@ const localStorageMock = {
 	clear: () => storage = {}
 };
 
-Object.defineProperty(window, 'localStorage', {
+Object.defineProperty(window, "localStorage", {
 	value: localStorageMock
 });
