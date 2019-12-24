@@ -1,10 +1,7 @@
 # The Full Stack Open Course
 
 <p>This repository is all about the projects and exercises that are submitted on the open courseware 
-<a __target="blank" href="https://fullstackopen.com/en">https://fullstackopen.com/en</a>
-
-<hr>
-----
+<a target="__blank" href="https://fullstackopen.com/en">https://fullstackopen.com/en</a>
 
 ## Tech Stack
 
