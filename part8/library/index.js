@@ -2,6 +2,7 @@ const {
 	ApolloServer,
 	gql
 } = require('apollo-server');
+const uuid = require("uuid/v1");
 
 let authors = [{
 		name: 'Robert Martin',
@@ -105,8 +106,18 @@ const typeDefs = gql `
 		hello: String!,
 		bookCount : Int!,
 		authorCount : Int!,
-		allBooks : [Book!]!,
-		allAuthors : [Author!]!
+		allBooks(author : String, genre : String)  : [Book!]!,
+		allAuthors: [Author!]!
+	}
+
+	type Mutation {
+		addBook(
+			title : String!,
+			author : String!,
+			published : Int!,
+			genres : [String!]!
+		) : Book,
+		editAuthor(name : String!, setBornTo : Int!) : Author
 	}
 `;
 
@@ -119,7 +130,16 @@ const resolvers = {
 			return books.length;
 		},
 		authorCount: () => authors.length,
-		allBooks: () => books,
+		allBooks: (root, args) => {
+			let all = books;
+			if (args.author) {
+				all = all.filter(book => book.author === args.author);
+			}
+			if (args.genre) {
+				all = all.filter(book => book.genres.includes(args.genre));
+			}
+			return all;
+		},
 		allAuthors: () => authors
 	},
 
@@ -133,6 +153,38 @@ const resolvers = {
 	},
 	Author: {
 		bookCount: root => books.filter(b => b.author === root.name).length,
+	},
+	Mutation: {
+		addBook: (root, args) => {
+			if (books.find(book => book.title === args.title)) {
+				return null;
+			}
+			const author = args.author;
+			if (!authors.find(a => a.name === author)) {
+				authors.push({
+					name: author,
+					id: uuid(),
+				});
+			}
+			const newBook = {
+				...args,
+				id: uuid()
+			};
+			books.push(newBook);
+			return newBook;
+		},
+		editAuthor: (root, args) => {
+			const oldAuthor = authors.find(a => a.name === args.name);
+			if (!oldAuthor) {
+				return null;
+			}
+			const newAuthor = {
+				...oldAuthor,
+				born: args.setBornTo
+			};
+			authors = authors.map(a => a.name === args.name ? newAuthor : a);
+			return newAuthor;
+		}
 	}
 };
 
