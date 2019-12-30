@@ -1,7 +1,8 @@
 const {
 	ApolloServer,
 	gql,
-	UserInputError
+	UserInputError,
+	PubSub
 } = require('apollo-server');
 const Book = require("./models/Book");
 const Author = require("./models/Author");
@@ -9,7 +10,7 @@ const User = require("./models/User");
 const mongoose = require("mongoose");
 const config = require("./utils/config");
 const jwt = require('jsonwebtoken');
-
+const pubsub = new PubSub();
 const {
 	JWT_SECRET
 } = config;
@@ -21,7 +22,29 @@ mongoose.connect(config.MONGODB_URI, {
 	useFindAndModify: true
 }, err => {
 	if (err) console.error(err)
-	else console.log("Connected to DB :", config.MONGODB_URI)
+	else {
+		console.log("Connected to DB :", config.MONGODB_URI);
+		// Book.deleteMany({
+		// 	genres: {
+		// 		$in: ["testing", "test-2", "test-3"]
+		// 	}
+		// }).then(res => console.log("##", res));
+		// Author.deleteOne({
+		// 	name: "Dhruvil shah"
+		// }).then(res => console.log("@@", res));
+
+		// Author.find({})
+		// 	.then(async authors => {
+		// 		for (let index in authors) {
+		// 			authors[index].books = (await Book.find({}).populate("author")).filter(book => book.author.name === authors[index].name).map(obj => obj._id);
+		// 			console.log(authors[index].name, authors[index].books);
+		// 			authors[index].save();
+		// 		}
+		// 	})
+		// 	.catch(err => console.error(err));
+
+		// User.deleteMany({}).then(res => console.log("deleted all users.", res));
+	}
 });
 
 const typeDefs = gql `
@@ -56,7 +79,8 @@ const typeDefs = gql `
 		authorCount : Int!,
 		allBooks(author : String, genre : String)  : [Book!]!,
 		allAuthors: [Author!]!,
-		me : User
+		me : User,
+		allGenres : [String]!
 	}
 
 	type Mutation {
@@ -75,6 +99,10 @@ const typeDefs = gql `
 			username: String!
 			password: String!
 		): Token
+	}
+
+	type Subscription {
+		bookAdded : Book!
 	}
 `;
 
@@ -97,7 +125,15 @@ const resolvers = {
 					$in: args.genre
 				};
 			}
-			return (await Book.find(parameters));
+			return (await Book.find(parameters).populate("Author"));
+		},
+		allGenres: async (root, args) => {
+			const books = await Book.find({});
+			const genres = new Set();
+			books.forEach(book => {
+				book.genres.forEach(genre => genres.add(genre));
+			});
+			return genres.values();
 		},
 		allAuthors: async () => await Author.find({}),
 		me: (root, args, context) => context.currentUser
@@ -114,7 +150,7 @@ const resolvers = {
 		id: root => root._id.toString()
 	},
 	Author: {
-		bookCount: async root => (await Book.find({}).populate("author")).filter(book => book.author.name === root.name).length,
+		bookCount: root => root.books.length,
 		id: root => root._id.toString()
 	},
 	User: {
@@ -144,7 +180,7 @@ const resolvers = {
 				if (author === null) {
 					author = await (new Author({
 						name: authorName
-					})).save();
+					}));
 				}
 
 				const newBook = new Book({
@@ -152,7 +188,15 @@ const resolvers = {
 					author: author._id
 				});
 
-				return (await newBook.save());
+				author.books.push(newBook._id);
+				await author.save();
+				await newBook.save();
+
+				pubsub.publish("BOOK_ADDED", {
+					bookAdded: newBook
+				});
+
+				return newBook;
 			} catch (err) {
 				throw new UserInputError(err.message, {
 					invalidArgs: args,
@@ -223,6 +267,11 @@ const resolvers = {
 				value: jwt.sign(userForToken, JWT_SECRET)
 			}
 		},
+	},
+	Subscription: {
+		bookAdded: {
+			subscribe: () => pubsub.asyncIterator(["BOOK_ADDED"])
+		}
 	}
 };
 
@@ -248,8 +297,9 @@ const server = new ApolloServer({
 });
 
 server.listen().then(({
-	url
+	url,
+	subscriptionsUrl
 }) => {
 	console.log(`Server ready at ${url}`);
-	// User.deleteMany({}).then(res => console.log("deleted all users.", res));
+	console.log(`Subscriptions ready at ${subscriptionsUrl}`);
 });
