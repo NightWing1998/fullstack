@@ -36,6 +36,6 @@ The course teaches the following frameworks and libraries:
 
 ## Certificate
 
-<a href="https://studies.cs.helsinki.fi/fullstackopen2019/certificate/en/7765649295ddc66365b7d59832f0be77" target="__blank" ><img src="https://studies.cs.helsinki.fi/fullstackopen2019/certificate/en/7765649295ddc66365b7d59832f0be77" width=500 height=500 alt-text="certificate" ></a>
+<a href="./certificate-fullstackopen.png" target="__blank" ><img src="certificate-fullstackopen.png" width=500 height=500 alt-text="certificate" ></a>
 
 </p>
