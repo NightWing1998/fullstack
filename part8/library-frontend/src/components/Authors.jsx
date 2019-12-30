@@ -27,7 +27,7 @@ const Authors = (props) => {
 	if (error) {
 		props.onError(error.message);
 		console.error(error);
-		return;
+		return <>{error.name}</>;
 	}
 
 	const authors = data.allAuthors;
@@ -55,7 +55,11 @@ const Authors = (props) => {
 					)}
 				</tbody>
 			</table>
-			<BirthYearForm authors={authors} onError={props.onError} />
+			{props.token ?
+				<BirthYearForm authors={authors} onError={props.onError} />
+				:
+				<></>
+			}
 		</div>
 	)
 }

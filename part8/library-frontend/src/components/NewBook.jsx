@@ -24,7 +24,7 @@ const NEW_BOOK = gql`
 `;
 
 const ALL_BOOKS = gql`{
-	allBooks {
+	allBooks{
 		title
 		author {
 			name
@@ -32,7 +32,8 @@ const ALL_BOOKS = gql`{
 		}
 		published
 		id
-	}
+	},
+	allGenres
 }`;
 
 const ALL_AUTHORS = gql`{
@@ -51,20 +52,25 @@ const NewBook = (props) => {
 	const [genre, setGenre] = useState('')
 	const [genres, setGenres] = useState([])
 
-	const [createBook , {loading,error}] = useMutation(NEW_BOOK,{
-		update(cache, {data : {addBook}}){
-			const {allBooks} = cache.readQuery({query : ALL_BOOKS});
+	const [createBook, { loading, error }] = useMutation(NEW_BOOK, {
+		update(cache, { data: { addBook } }) {
+			const { allBooks, allGenres } = cache.readQuery({ query: ALL_BOOKS });
 			// console.log("New book -- ", addBook,"All books ---",allBooks);
-			cache.writeQuery({
-				query : ALL_BOOKS,
-				data : {allBooks : allBooks.concat(addBook)}
+			genres.forEach(newGen => {
+				if (!allGenres.find(oldGen => oldGen === newGen)) {
+					allGenres.push(newGen);
+				}
 			});
-			const {allAuthors} = cache.readQuery({query : ALL_AUTHORS});
+			cache.writeQuery({
+				query: ALL_BOOKS,
+				data: { allBooks: allBooks.concat(addBook), allGenres },
+			});
+			const { allAuthors } = cache.readQuery({ query: ALL_AUTHORS });
 			// console.log("All authors --",allAuthors,"current Author ---",addBook.author);
-			if(!allAuthors.find(a => a.name === addBook.author.name)){
+			if (!allAuthors.find(a => a.name === addBook.author.name)) {
 				cache.writeQuery({
-					query : ALL_AUTHORS,
-					data : {allAuthors : allAuthors.concat(addBook.author)}
+					query: ALL_AUTHORS,
+					data: { allAuthors: allAuthors.concat(addBook.author) }
 				});
 				// console.log("New All authors : ", allAuthors.concat(addBook.author));
 			};
@@ -79,20 +85,20 @@ const NewBook = (props) => {
 		return <div>Loading...</div>;
 	};
 
-	if(error){
+	if (error) {
 		props.onError(error.message);
 		console.error(error);
-		return <>{error.name}</>; 
+		return <>{error.name}</>;
 	}
 
 	const submit = async (e) => {
 		e.preventDefault()
 
-		console.log('add book...');
-
-		createBook({variables : {
-			title, author, published : parseInt(published), genres
-		}});
+		createBook({
+			variables: {
+				title, author, published: parseInt(published), genres
+			}
+		});
 
 		setTitle('')
 		setPublished('')
