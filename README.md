@@ -36,6 +36,6 @@ The course teaches the following frameworks and libraries:
 
 ## Certificate
 
-<a href="./certificate-fullstackopen.png" target="__blank" ><img src="certificate-fullstackopen.png" width=500 height=500 alt-text="certificate" ></a>
+<a href="./certificate-fullstackopen.png" target="__blank" ><img src="certificate-fullstackopen.png" width=800 height=500 alt-text="certificate" ></a>
 
 </p>
