@@ -2,6 +2,18 @@ import React, { useState } from 'react';
 import { gql } from 'apollo-boost';
 import { useMutation } from 'react-apollo';
 
+const BOOK_DETAILS = gql`
+	fragment BookDetails on Book {
+		title
+		author {
+			name
+			id
+		}
+		published
+		id
+	}
+`;
+
 const NEW_BOOK = gql`
 	mutation newBook($title: String!, $author : String!, $published : Int!, $genres : [String!]! ){
 		addBook(
@@ -10,31 +22,20 @@ const NEW_BOOK = gql`
 			published: $published
 			genres: $genres
 		) {
-			title,
-			author {
-				name
-				id
-				born
-				bookCount
-			}
-			id
-			published
+			...BookDetails
 		}
 	}
+	${BOOK_DETAILS}
 `;
 
-const ALL_BOOKS = gql`{
+const ALL_BOOKS = gql`
+{
 	allBooks{
-		title
-		author {
-			name
-			id
-		}
-		published
-		id
+		...BookDetails
 	},
 	allGenres
-}`;
+}
+	${BOOK_DETAILS}`;
 
 const ALL_AUTHORS = gql`{
 	allAuthors {
